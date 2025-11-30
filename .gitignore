@@ -59,6 +59,9 @@ screenshots/
 html_dumps/
 debug_logs/
 
+# Raw HTML files (too large for git)
+raw/
+
 # Test files
 test_*.py
 *_test.py

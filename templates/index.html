@@ -1678,9 +1678,9 @@
                 if (priceOptions.length > 0) {
                     const priceMatches = priceOptions.map(range => {
                         const [min, max] = range.split('-').map(Number);
-                        return listing.price_avg && listing.price_avg >= min && listing.price_avg <= max;
+                        return (listing.price_avg && listing.price_avg >= min && listing.price_avg <= max);
                     });
-                    priceResult = priceOp === 'AND' 
+                    priceResult = (priceOp === 'AND') 
                         ? priceMatches.every(match => match)
                         : priceMatches.some(match => match);
                 }
@@ -1691,12 +1691,12 @@
                     const bedsMatches = bedsOptions.map(bedOption => {
                         const bedCount = parseInt(bedOption);
                         if (bedCount === 4) {
-                            return listing.beds_num && listing.beds_num >= 4;
+                            return (listing.beds_num && listing.beds_num >= 4);
                         } else {
-                            return listing.beds_num === bedCount;
+                            return (listing.beds_num === bedCount);
                         }
                     });
-                    bedsResult = bedsOp === 'AND'
+                    bedsResult = (bedsOp === 'AND')
                         ? bedsMatches.every(match => match)
                         : bedsMatches.some(match => match);
                 }
@@ -1706,9 +1706,9 @@
                 if (sizeOptions.length > 0) {
                     const sizeMatches = sizeOptions.map(range => {
                         const [min, max] = range.split('-').map(Number);
-                        return listing.sqft_avg && listing.sqft_avg >= min && listing.sqft_avg <= max;
+                        return (listing.sqft_avg && listing.sqft_avg >= min && listing.sqft_avg <= max);
                     });
-                    sizeResult = sizeOp === 'AND'
+                    sizeResult = (sizeOp === 'AND')
                         ? sizeMatches.every(match => match)
                         : sizeMatches.some(match => match);
                 }
@@ -1717,9 +1717,9 @@
                 let communityResult = true;
                 if (communityOptions.length > 0) {
                     const communityMatches = communityOptions.map(comm => 
-                        listing.community?.toLowerCase().includes(comm.toLowerCase())
+                        (listing.community?.toLowerCase().includes(comm.toLowerCase()))
                     );
-                    communityResult = communityOp === 'AND'
+                    communityResult = (communityOp === 'AND')
                         ? communityMatches.every(match => match)
                         : communityMatches.some(match => match);
                 }
@@ -1730,17 +1730,17 @@
                     const parkingMatches = parkingOptions.map(option => {
                         const parkingSpots = listing.parking_spots || 0;
                         if (option === 'available') {
-                            return parkingSpots > 0;
+                            return (parkingSpots > 0);
                         } else if (option === 'none') {
-                            return parkingSpots === 0;
+                            return (parkingSpots === 0);
                         } else if (option === '1') {
-                            return parkingSpots === 1;
+                            return (parkingSpots === 1);
                         } else if (option === '2') {
-                            return parkingSpots >= 2;
+                            return (parkingSpots >= 2);
                         }
                         return false;
                     });
-                    parkingResult = parkingOp === 'AND'
+                    parkingResult = (parkingOp === 'AND')
                         ? parkingMatches.every(match => match)
                         : parkingMatches.some(match => match);
                 }
@@ -1765,12 +1765,12 @@
                         const isMultiUnit = listing.is_multi_unit || false;
                         
                         if (type === 'multi-unit') {
-                            return isMultiUnit;
+                            return (isMultiUnit);
                         } else {
-                            return buildingType.includes(type) || unitType.includes(type);
+                            return (buildingType.includes(type) || unitType.includes(type));
                         }
                     });
-                    unitTypeResult = unitTypeOp === 'AND'
+                    unitTypeResult = (unitTypeOp === 'AND')
                         ? unitTypeMatches.every(match => match)
                         : unitTypeMatches.some(match => match);
                 }
@@ -1779,11 +1779,11 @@
                 let utilitiesResult = true;
                 if (utilitiesOptions.length > 0) {
                     const utilitiesMatches = utilitiesOptions.map(utility => {
-                        return listing.utilities_included && 
+                        return (listing.utilities_included && 
                                Array.isArray(listing.utilities_included) && 
-                               listing.utilities_included.some(u => u.toLowerCase().includes(utility.toLowerCase()));
+                               listing.utilities_included.some(u => u.toLowerCase().includes(utility.toLowerCase())));
                     });
-                    utilitiesResult = utilitiesOp === 'AND'
+                    utilitiesResult = (utilitiesOp === 'AND')
                         ? utilitiesMatches.every(match => match)
                         : utilitiesMatches.some(match => match);
                 }
@@ -1792,11 +1792,11 @@
                 let amenitiesResult = true;
                 if (amenitiesOptions.length > 0) {
                     const amenitiesMatches = amenitiesOptions.map(amenity => {
-                        return listing.amenities && 
+                        return (listing.amenities && 
                                Array.isArray(listing.amenities) && 
-                               listing.amenities.some(a => a.toLowerCase().includes(amenity.toLowerCase()));
+                               listing.amenities.some(a => a.toLowerCase().includes(amenity.toLowerCase())));
                     });
-                    amenitiesResult = amenitiesOp === 'AND'
+                    amenitiesResult = (amenitiesOp === 'AND')
                         ? amenitiesMatches.every(match => match)
                         : amenitiesMatches.some(match => match);
                 }
@@ -1804,26 +1804,50 @@
                 // Quick filters (all must be met - always AND)
                 let quickResult = true;
                 if (immediate) {
-                    quickResult = quickResult && (listing.immediately_available === 'Yes');
+                    quickResult = (quickResult && (listing.immediately_available === 'Yes'));
                 }
                 if (pets) {
-                    quickResult = quickResult && (listing.pet_friendly === true);
+                    quickResult = (quickResult && (listing.pet_friendly === true));
                 }
                 if (value) {
-                    quickResult = quickResult && (listing.cost_per_sqft && listing.cost_per_sqft <= 1.5);
+                    quickResult = (quickResult && (listing.cost_per_sqft && listing.cost_per_sqft <= 1.5));
                 }
 
                 // Location filter (radius-based) - use cached distance
                 let locationResult = true;
                 if (selectedLocation && listing._distance !== undefined) {
-                    locationResult = listing._distance <= selectedRadius;
+                    locationResult = (listing._distance <= selectedRadius);
                 }
 
                 // ALL filters must pass (AND between all filters)
-                return searchResult && priceResult && bedsResult && sizeResult && communityResult && 
-                       parkingResult && furnishedResult && unitTypeResult && utilitiesResult && 
-                       amenitiesResult && quickResult && locationResult;
+                // Enclosing each filter result in parentheses for clarity (though not strictly necessary here)
+                return (searchResult) && (priceResult) && (bedsResult) && (sizeResult) && (communityResult) && 
+                       (parkingResult) && (furnishedResult) && (unitTypeResult) && (utilitiesResult) && 
+                       (amenitiesResult) && (quickResult) && (locationResult);
             });
+
+            // Log filter results to console
+            console.group('🔍 Filter Results');
+            console.log('Total listings:', allListings.length);
+            console.log('Filtered listings:', filteredListings.length);
+            console.log('Active filters:', {
+                search: searchText || 'none',
+                price: priceOptions.length > 0 ? priceOptions : 'none',
+                beds: bedsOptions.length > 0 ? bedsOptions : 'none',
+                size: sizeOptions.length > 0 ? sizeOptions : 'none',
+                community: communityOptions.length > 0 ? communityOptions : 'none',
+                parking: parkingOptions.length > 0 ? parkingOptions : 'none',
+                furnished: furnished || 'none',
+                unitType: unitTypeOptions.length > 0 ? unitTypeOptions : 'none',
+                utilities: utilitiesOptions.length > 0 ? utilitiesOptions : 'none',
+                amenities: amenitiesOptions.length > 0 ? amenitiesOptions : 'none',
+                immediate: immediate,
+                pets: pets,
+                value: value,
+                location: selectedLocation ? `Radius: ${selectedRadius}km` : 'none'
+            });
+            console.log('Sort by:', sortBy);
+            console.groupEnd();
 
             // Update active filters badge
             updateActiveFiltersBadge();
@@ -1887,7 +1911,7 @@
                     <img src="${listing.thumb || '/static/placeholder.png'}" 
                          alt="${listing.title || 'Rental'}" 
                          class="listing-image"
-                         onerror="this.src='/static/placeholder.png'">
+                         onerror="if(this.src!=='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'){this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2218%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E';}">
                     
                     <div class="listing-details">
                         <div class="listing-title">${listing.title || 'Rental Available'}</div>

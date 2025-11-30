@@ -7,7 +7,7 @@ import json
 
 def main():
     # Load data
-    with open('rentfaster_detailed_parallel.json', 'r') as f:
+    with open('rentfaster_detailed_offline.json', 'r') as f:
         listings = json.load(f)
     
     # Count multi-unit buildings

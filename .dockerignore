@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+debug_logs/
+scraper.log
+
+# Raw HTML files (too large)
+raw/
+
+# Backups
+*_backup_*.json
+*_backup_*.csv
+
+# Test files
+test_*.py
+test_*.json
+
+# Documentation (optional - include if needed)
+*.md
+!README.md
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Screenshots and HTML dumps
+screenshots/
+html_dumps/

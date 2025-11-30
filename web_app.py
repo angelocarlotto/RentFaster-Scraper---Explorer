@@ -10,8 +10,8 @@ import os
 
 app = Flask(__name__)
 
-# Load data - try detailed data first, fall back to basic data
-LISTINGS_JSON = 'rentfaster_detailed_parallel.json' if os.path.exists('rentfaster_detailed_parallel.json') else 'rentfaster_listings.json'
+# Load data - use offline scraped data only
+LISTINGS_JSON = 'rentfaster_detailed_offline.json' if os.path.exists('rentfaster_detailed_offline.json') else 'rentfaster_listings.json'
 
 @app.route('/')
 def index():
@@ -349,7 +349,9 @@ if __name__ == '__main__':
     
     if not os.path.exists(LISTINGS_JSON):
         print(f"\n❌ Error: {LISTINGS_JSON} not found!")
-        print("Please run main.py first to scrape the data.")
+        print("Please run the scraping workflow first:")
+        print("  1. download_raw_html_parallel.py - Download HTML files")
+        print("  2. scrape_offline_parallel.py - Parse offline data")
         exit(1)
     
     with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:

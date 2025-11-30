@@ -1,0 +1,20 @@
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# HTTP Requests
+requests==2.31.0
+
+# HTML Parsing
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# Web Scraping (for download scripts)
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Data Processing
+python-dateutil==2.8.2
+
+# Production WSGI Server (optional)
+gunicorn==21.2.0

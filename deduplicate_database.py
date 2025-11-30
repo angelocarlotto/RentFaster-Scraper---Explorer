@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Deduplicate rentfaster_detailed_parallel.json
+Deduplicate rentfaster_detailed_offline.json
 Keeps only the MOST RECENT version of each ref_id
 """
 
@@ -14,7 +14,7 @@ def deduplicate_database():
     
     # Load database
     print("\n📂 Loading database...")
-    with open('rentfaster_detailed_parallel.json', 'r') as f:
+    with open('rentfaster_detailed_offline.json', 'r') as f:
         all_data = json.load(f)
     
     print(f"   Total entries: {len(all_data):,}")
@@ -63,16 +63,9 @@ def deduplicate_database():
     print(f"\n   Entries removed: {removed:,}")
     print(f"   Final count: {len(deduplicated):,}")
     
-    # Backup original
-    print(f"\n💾 Creating backup...")
-    import shutil
-    backup_name = f"rentfaster_detailed_parallel_backup_{int(datetime.now().timestamp())}.json"
-    shutil.copy('rentfaster_detailed_parallel.json', backup_name)
-    print(f"   Backup saved: {backup_name}")
-    
-    # Save deduplicated
+    # Save deduplicated (backup disabled)
     print(f"\n💾 Saving deduplicated database...")
-    with open('rentfaster_detailed_parallel.json', 'w', encoding='utf-8') as f:
+    with open('rentfaster_detailed_offline.json', 'w', encoding='utf-8') as f:
         json.dump(deduplicated, f, ensure_ascii=False, indent=2)
     
     print(f"\n{'='*80}")
@@ -81,7 +74,6 @@ def deduplicate_database():
     print(f"   Original: {len(all_data):,} entries")
     print(f"   Removed:  {removed:,} duplicates")
     print(f"   Final:    {len(deduplicated):,} unique entries")
-    print(f"   Backup:   {backup_name}")
     print(f"{'='*80}\n")
 
 if __name__ == "__main__":
