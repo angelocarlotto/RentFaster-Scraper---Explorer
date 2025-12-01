@@ -1,0 +1,60 @@
+Scanning city_id from 1 to 200...
+
+✅ city_id=  1 → Calgary              (Alberta        ) - 48 listings on page 1
+✅ city_id=  2 → Edmonton             (Alberta        ) - 48 listings on page 1
+✅ city_id=  3 → Regina               (Saskatchewan   ) - 48 listings on page 1
+✅ city_id=  4 → Saskatoon            (Saskatchewan   ) - 48 listings on page 1
+✅ city_id=  5 → Winnipeg             (Manitoba       ) - 48 listings on page 1
+✅ city_id=  6 → Vancouver            (British Columbia) - 48 listings on page 1
+✅ city_id=  7 → Toronto              (Ontario        ) - 48 listings on page 1
+✅ city_id=  8 → Airdrie              (Alberta        ) - 48 listings on page 1
+✅ city_id= 12 → Chestermere          (Alberta        ) - 33 listings on page 1
+✅ city_id= 14 → Cochrane             (Alberta        ) - 48 listings on page 1
+   ... scanned up to city_id=20
+✅ city_id= 31 → Fort Saskatchewan    (Alberta        ) - 9 listings on page 1
+✅ city_id= 36 → Beaumont             (Alberta        ) - 2 listings on page 1
+✅ city_id= 39 → Leduc                (Alberta        ) - 21 listings on page 1
+   ... scanned up to city_id=40
+✅ city_id= 43 → St. Albert           (Alberta        ) - 9 listings on page 1
+   ... scanned up to city_id=60
+✅ city_id= 72 → Surrey               (British Columbia) - 2 listings on page 1
+   ... scanned up to city_id=80
+✅ city_id= 97 → Victoria             (British Columbia) - 48 listings on page 1
+   ... scanned up to city_id=100
+✅ city_id=114 → Brampton             (Ontario        ) - 48 listings on page 1
+   ... scanned up to city_id=120
+✅ city_id=127 → Kitchener            (Ontario        ) - 24 listings on page 1
+✅ city_id=128 → London               (Ontario        ) - 48 listings on page 1
+✅ city_id=139 → Mississauga          (Ontario        ) - 48 listings on page 1
+   ... scanned up to city_id=140
+✅ city_id=149 → Ottawa               (Ontario        ) - 48 listings on page 1
+✅ city_id=155 → Waterloo             (Ontario        ) - 3 listings on page 1
+   ... scanned up to city_id=160
+   ... scanned up to city_id=180
+   ... scanned up to city_id=200
+
+📊 Found 22 cities total
+
+Cities discovered:
+    8: Airdrie              (Alberta)
+   36: Beaumont             (Alberta)
+  114: Brampton             (Ontario)
+    1: Calgary              (Alberta)
+   12: Chestermere          (Alberta)
+   14: Cochrane             (Alberta)
+    2: Edmonton             (Alberta)
+   31: Fort Saskatchewan    (Alberta)
+  127: Kitchener            (Ontario)
+   39: Leduc                (Alberta)
+  128: London               (Ontario)
+  139: Mississauga          (Ontario)
+  149: Ottawa               (Ontario)
+    3: Regina               (Saskatchewan)
+    4: Saskatoon            (Saskatchewan)
+   43: St. Albert           (Alberta)
+   72: Surrey               (British Columbia)
+    7: Toronto              (Ontario)
+    6: Vancouver            (British Columbia)
+   97: Victoria             (British Columbia)
+  155: Waterloo             (Ontario)
+    5: Winnipeg             (Manitoba)

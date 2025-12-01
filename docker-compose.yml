@@ -33,6 +33,7 @@ services:
   #     dockerfile: Dockerfile
   #   container_name: rentfaster_scraper
   #   volumes:
+  #     # Mount raw folder with city subdirectories
   #     - ./raw:/app/raw
   #     - ./rentfaster_detailed_offline.json:/app/rentfaster_detailed_offline.json
   #   command: python scrape_offline_parallel.py 20

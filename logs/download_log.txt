@@ -1,0 +1,20 @@
+================================================================================
+📥 RentFaster Raw HTML Downloader (Parallel)
+================================================================================
+
+🌍 Loading cities configuration...
+   Enabled cities: Edmonton, Toronto
+
+📂 Loading listings...
+   Loaded 4,541 listings
+
+================================================================================
+⚙️  CONFIGURATION:
+================================================================================
+  Listings to download: 4,541
+  Parallel workers:     40
+  Headless mode:        True
+  Estimated time:       ~18.9 minutes
+================================================================================
+
+Press Enter to start (or Ctrl+C to cancel)...

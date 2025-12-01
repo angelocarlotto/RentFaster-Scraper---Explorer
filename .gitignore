@@ -47,6 +47,7 @@ chromedriver.exe
 *.csv
 *.json
 !example_data.json
+!cities_config.json
 rentfaster_*.json
 rentfaster_*.csv
 

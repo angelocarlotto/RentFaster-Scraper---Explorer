@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-Display summary of RentFaster data with multi-unit support
+[UTILITY] Display Database Summary
+
+Shows statistics about the scraped data including multi-unit support.
+
+Reads: rentfaster_detailed_offline.json
+Outputs: Console summary statistics
 """
 
 import json

@@ -1,0 +1,15 @@
+Scanning city_id from 200 to 2000 (first page only)...
+
+   ... scanned up to city_id=200
+   ... scanned up to city_id=400
+   ... scanned up to city_id=600
+   ... scanned up to city_id=800
+   ... scanned up to city_id=1000
+   ... scanned up to city_id=1200
+   ... scanned up to city_id=1400
+   ... scanned up to city_id=1600
+   ... scanned up to city_id=1800
+   ... scanned up to city_id=2000
+
+📊 Found 0 NEW cities in range 200-2000
+   No additional cities found beyond city_id 200

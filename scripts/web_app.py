@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-RentFaster Web Explorer
-Flask web application to explore rental listings with interactive filters
+[STEP 4] RentFaster Web Explorer
+
+Flask web application to explore rental listings with interactive filters.
+Provides a user-friendly interface to browse and filter rental data.
+
+Reads: rentfaster_detailed_offline.json
+Serves: Web UI at http://localhost:5001
 """
 
 from flask import Flask, render_template, jsonify, send_from_directory

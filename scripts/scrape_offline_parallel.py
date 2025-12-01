@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-RentFaster Offline Scraper - Works with locally downloaded HTML files
-Much faster than online scraping and avoids Cloudflare issues
+[STEP 3] RentFaster Offline Scraper - Works with locally downloaded HTML files
+
+Much faster than online scraping and avoids Cloudflare issues.
+Parses HTML files to extract detailed listing information.
+
+Configuration:
+- Reads cities from cities_config.json
+- Processes HTML files from raw/{city_code}/ folders
+- Combines data from all enabled cities
+
+Reads: rentfaster_listings.json, raw/{city_code}/*.html, cities_config.json
+Outputs: rentfaster_detailed_offline.json
 """
 
 from pathlib import Path
@@ -19,6 +29,34 @@ file_lock = threading.Lock()
 
 # Raw HTML directory
 RAW_DIR = Path("raw")
+
+def load_cities_config():
+    """Load cities configuration from cities_config.json"""
+    config_file = Path("cities_config.json")
+    
+    if not config_file.exists():
+        print("⚠️  cities_config.json not found, using default Calgary")
+        return [{
+            "name": "Calgary",
+            "city_code": "calgary"
+        }]
+    
+    with open(config_file, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    # Get enabled cities or default city
+    enabled_cities = [city for city in config.get('cities', []) if city.get('enabled', False)]
+    
+    if not enabled_cities:
+        default_code = config.get('default_city', 'calgary')
+        # Find default city
+        for city in config.get('cities', []):
+            if city.get('city_code') == default_code:
+                return [city]
+        return []
+    
+    enabled_cities.sort(key=lambda x: x.get('priority', 999))
+    return enabled_cities
 
 # Global statistics
 stats = {
@@ -72,14 +110,15 @@ def print_live_status():
 def extract_from_local_html(html_file, ref_id, city, thread_id):
     """Extract details from local HTML file"""
     try:
-        # Find HTML file (check root and city subdirectory)
+        # Find HTML file in city folder structure
         if not html_file:
-            # Try root directory first
-            html_file = RAW_DIR / f"{ref_id}.html"
+            # Try city subdirectory: raw/{city_code}/
+            city_code = city.lower().replace(' ', '_')
+            html_file = RAW_DIR / city_code / f"{ref_id}.html"
+            
+            # Fallback to root raw/ directory (legacy)
             if not html_file.exists():
-                # Try city subdirectory
-                city_dir = RAW_DIR / city.lower().replace(' ', '_')
-                html_file = city_dir / f"{ref_id}.html"
+                html_file = RAW_DIR / f"{ref_id}.html"
         
         if not html_file.exists():
             return None
@@ -259,7 +298,7 @@ def scrape_parallel(listings, num_workers=10):
     print(f"{'='*80}")
     print(f"   Workers: {num_workers}")
     print(f"   Mode: Offline (from local HTML files)")
-    print(f"   Input directory: {RAW_DIR}")
+    print(f"   Input directory: {RAW_DIR}/{{city_code}}/")
     print(f"   Total listings: {total:,}")
     
     # Split listings into batches
@@ -344,13 +383,6 @@ def main():
     print("🚀 RentFaster Offline Scraper (Parallel)")
     print("=" * 80)
     
-    # Check if raw directory exists
-    if not RAW_DIR.exists():
-        print("\n❌ ERROR: Raw directory not found!")
-        print("   Please run 'download_raw_html_parallel.py' first to download HTML files.")
-        print(f"   Expected directory: {RAW_DIR}/")
-        sys.exit(1)
-    
     # Parse command line arguments
     num_workers = 10
     if len(sys.argv) > 1:
@@ -367,27 +399,43 @@ def main():
     
     print(f"   Loaded {len(all_listings):,} listings\n")
     
-    # Check how many have HTML files (including subdirectories)
+    # Load cities configuration
+    enabled_cities = load_cities_config()
+    if not enabled_cities:
+        print("❌ No cities enabled in cities_config.json")
+        sys.exit(1)
+    
+    print(f"📍 Enabled cities: {', '.join(c['name'] for c in enabled_cities)}\n")
+    
+    # Check how many have HTML files (scan all enabled city folders)
     html_files = []
     html_ids = set()
     
-    # Check root directory
-    html_files.extend(RAW_DIR.glob("*.html"))
+    # Check root raw/ directory (legacy - files without city subdirs)
+    if RAW_DIR.exists():
+        legacy_html = list(RAW_DIR.glob("*.html"))
+        html_files.extend(legacy_html)
+        if legacy_html:
+            print(f"   Found {len(legacy_html):,} HTML files in {RAW_DIR}/ (legacy)")
     
-    # Check city subdirectories
-    for city_dir in RAW_DIR.iterdir():
-        if city_dir.is_dir():
-            html_files.extend(city_dir.glob("*.html"))
+    # Check all enabled city folders: raw/{city_code}/
+    for city in enabled_cities:
+        city_dir = RAW_DIR / city['city_code']
+        if city_dir.exists() and city_dir.is_dir():
+            city_html = list(city_dir.glob("*.html"))
+            html_files.extend(city_html)
+            if city_html:
+                print(f"   Found {len(city_html):,} HTML files in {city_dir}/")
     
     html_ids = {f.stem for f in html_files}
     
     if not html_files:
         print("\n❌ ERROR: No raw HTML files found!")
         print("   Please run 'download_raw_html_parallel.py' first to download HTML files.")
-        print(f"   Expected directory: {RAW_DIR}/ or {RAW_DIR}/city_name/")
+        print(f"   Expected directories: {RAW_DIR}/{{city_code}}/")
         sys.exit(1)
     
-    print(f"📁 Found {len(html_files):,} HTML files in {RAW_DIR}/")
+    print(f"\n📁 Total: {len(html_files):,} HTML files across all cities")
     
     # Filter to only listings with HTML files
     listings_with_html = [l for l in all_listings if l.get('ref_id') in html_ids]

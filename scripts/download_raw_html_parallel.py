@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """
-RentFaster Raw HTML Downloader - Parallel Version
-Downloads raw HTML for all listings and saves to local files
-This creates a cache that can be scraped offline later
+[STEP 2] RentFaster Raw HTML Downloader - Parallel Version
+
+Downloads raw HTML for all listings and saves to local files.
+This creates a cache that can be scraped offline later.
+
+Configuration:
+- Reads cities from cities_config.json
+- Downloads only enabled cities
+- Stores files in raw/{city_code}/ folders (e.g., raw/calgary/)
+
+Reads: rentfaster_listings.json, cities_config.json
+Outputs: raw/{city_code}/*.html files
 """
 
 from selenium import webdriver
@@ -23,7 +32,7 @@ import sys
 # Thread-safe lock for file operations
 file_lock = threading.Lock()
 
-# Create raw folder structure
+# Raw HTML directory
 RAW_DIR = Path("raw")
 RAW_DIR.mkdir(exist_ok=True)
 
@@ -40,6 +49,29 @@ stats = {
     'skipped': 0  # Already downloaded
 }
 stats_lock = threading.Lock()
+
+def load_cities_config():
+    """Load cities configuration from cities_config.json"""
+    config_file = Path("cities_config.json")
+    
+    if not config_file.exists():
+        print("⚠️  cities_config.json not found, using default Calgary")
+        return [{
+            "name": "Calgary",
+            "province_code": "ab",
+            "city_code": "calgary",
+            "url": "https://www.rentfaster.ca/ab/calgary/",
+            "enabled": True
+        }]
+    
+    with open(config_file, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    # Filter enabled cities and sort by priority
+    enabled_cities = [city for city in config.get('cities', []) if city.get('enabled', False)]
+    enabled_cities.sort(key=lambda x: x.get('priority', 999))
+    
+    return enabled_cities
 
 def print_live_status():
     """Print live updating status display"""
@@ -141,8 +173,9 @@ def download_html(driver, url, ref_id, city, thread_id):
         # Get HTML source
         html_source = driver.page_source
         
-        # Create city-specific directory
-        city_dir = RAW_DIR / city.lower().replace(' ', '_')
+        # Create city-specific directory structure: raw/{city_code}/
+        city_code = city.lower().replace(' ', '_')
+        city_dir = RAW_DIR / city_code
         city_dir.mkdir(parents=True, exist_ok=True)
         
         # Save to file in city directory
@@ -185,11 +218,17 @@ def download_batch_worker(batch_data):
         
         for listing in batch:
             ref_id = listing.get('ref_id')
-            url = listing.get('link')
+            link = listing.get('link', '')
+            # Fix relative URLs - prepend base domain if needed
+            if link.startswith('/'):
+                url = f"https://www.rentfaster.ca{link}"
+            else:
+                url = link
             city = listing.get('city', 'unknown')
             
             # Check if already downloaded (check in city directory)
-            city_dir = RAW_DIR / city.lower().replace(' ', '_')
+            city_code = city.lower().replace(' ', '_')
+            city_dir = RAW_DIR / city_code
             html_file = city_dir / f"{ref_id}.html"
             if html_file.exists():
                 with stats_lock:
@@ -232,7 +271,7 @@ def download_parallel(listings, num_workers=5, headless=True):
     print(f"   Workers: {num_workers}")
     print(f"   Mode: {'Headless (background)' if headless else 'Visible browsers'}")
     print(f"   Total listings: {total:,}")
-    print(f"   Output directory: {RAW_DIR}")
+    print(f"   Output directory: {RAW_DIR}/{{city_code}}/")
     
     # Split listings into batches
     print(f"\n📦 Creating batches...", end='', flush=True)
@@ -304,7 +343,7 @@ def download_parallel(listings, num_workers=5, headless=True):
     print(f"   Failed: {stats['failed']:,}")
     print(f"   Total time: {elapsed/60:.1f} minutes")
     print(f"   Average speed: {stats['completed']/elapsed:.2f} files/second")
-    print(f"   Output directory: {RAW_DIR}/")
+    print(f"   Output directory: {RAW_DIR}/{{city_code}}/")
     print(f"{'='*80}\n")
 
 def main():
@@ -341,15 +380,30 @@ def main():
         if headless_str in ['false', 'no', '0', 'visible']:
             headless = False
     
+    # Load cities configuration
+    print("\n🌍 Loading cities configuration...")
+    enabled_cities = load_cities_config()
+    
+    if not enabled_cities:
+        print("❌ No cities enabled in cities_config.json")
+        print("   Edit cities_config.json and set 'enabled: true' for at least one city")
+        sys.exit(1)
+    
+    print(f"   Enabled cities: {', '.join(c['name'] for c in enabled_cities)}\n")
+    
     # Load listings
-    print("\n📂 Loading listings...")
+    print("📂 Loading listings...")
     with open('rentfaster_listings.json', 'r', encoding='utf-8') as f:
         all_listings = json.load(f)
     
     print(f"   Loaded {len(all_listings):,} listings\n")
     
-    # Check for already downloaded files
-    existing_files = list(RAW_DIR.glob("*.html"))
+    # Check for already downloaded files (check all city folders)
+    existing_files = []
+    for city in enabled_cities:
+        city_dir = RAW_DIR / city['city_code']
+        if city_dir.exists():
+            existing_files.extend(list(city_dir.glob("*.html")))
     existing_ids = {f.stem for f in existing_files}
     
     if existing_files:

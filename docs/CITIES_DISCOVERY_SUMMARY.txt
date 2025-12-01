@@ -1,0 +1,51 @@
+================================================================================
+RENTFASTER API - ALL SUPPORTED CITIES
+================================================================================
+
+Total cities: 22
+City ID range: 1-155 (scanned up to 2000, no additional cities found)
+
+Cities by Province:
+
+Alberta (9 cities):
+  ✅ city_id=  1  Calgary                    calgary
+  ✅ city_id=  2  Edmonton                   edmonton
+  ⏸️  city_id=  8  Airdrie                    airdrie
+  ⏸️  city_id= 12  Chestermere                chestermere
+  ⏸️  city_id= 14  Cochrane                   cochrane
+  ⏸️  city_id= 31  Fort Saskatchewan          fort-saskatchewan
+  ⏸️  city_id= 36  Beaumont                   beaumont
+  ⏸️  city_id= 39  Leduc                      leduc
+  ⏸️  city_id= 43  St. Albert                 st-albert
+
+British Columbia (3 cities):
+  ⏸️  city_id=  6  Vancouver                  vancouver
+  ⏸️  city_id= 72  Surrey                     surrey
+  ⏸️  city_id= 97  Victoria                   victoria
+
+Manitoba (1 cities):
+  ⏸️  city_id=  5  Winnipeg                   winnipeg
+
+Ontario (7 cities):
+  ✅ city_id=  7  Toronto                    toronto
+  ⏸️  city_id=114  Brampton                   brampton
+  ⏸️  city_id=127  Kitchener                  kitchener
+  ⏸️  city_id=128  London                     london
+  ⏸️  city_id=139  Mississauga                mississauga
+  ⏸️  city_id=149  Ottawa                     ottawa
+  ⏸️  city_id=155  Waterloo                   waterloo
+
+Saskatchewan (2 cities):
+  ⏸️  city_id=  3  Regina                     regina
+  ⏸️  city_id=  4  Saskatoon                  saskatoon
+
+================================================================================
+Summary:
+  • Alberta: 12 cities
+  • Ontario: 8 cities
+  • British Columbia: 3 cities
+  • Saskatchewan: 2 cities
+  • Manitoba: 1 city
+  • Total: 22 cities
+  • Enabled: 3 cities (Calgary, Edmonton, Toronto)
+================================================================================

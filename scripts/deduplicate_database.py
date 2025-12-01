@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-Deduplicate rentfaster_detailed_offline.json
-Keeps only the MOST RECENT version of each ref_id
+[UTILITY] Deduplicate Database
+
+Removes duplicate listings from rentfaster_detailed_offline.json.
+Keeps only the MOST RECENT version of each ref_id.
+
+Reads: rentfaster_detailed_offline.json
+Outputs: rentfaster_detailed_offline.json (deduplicated)
 """
 
 import json

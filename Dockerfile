@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p raw/calgary static templates
+RUN mkdir -p raw/calgary raw/edmonton raw/toronto static templates
 
 # Expose port
 EXPOSE 5001

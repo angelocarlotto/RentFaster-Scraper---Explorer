@@ -1,0 +1,235 @@
+{
+  "cities": [
+    {
+      "name": "Calgary",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "calgary",
+      "city_id": 1,
+      "url": "https://www.rentfaster.ca/ab/calgary/",
+      "enabled": false,
+      "priority": 1
+    },
+    {
+      "name": "Edmonton",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "edmonton",
+      "city_id": 2,
+      "url": "https://www.rentfaster.ca/ab/edmonton/",
+      "enabled": true,
+      "priority": 2
+    },
+    {
+      "name": "Regina",
+      "province": "Saskatchewan",
+      "province_code": "sk",
+      "city_code": "regina",
+      "city_id": 3,
+      "url": "https://www.rentfaster.ca/sk/regina/",
+      "enabled": true,
+      "priority": 3
+    },
+    {
+      "name": "Saskatoon",
+      "province": "Saskatchewan",
+      "province_code": "sk",
+      "city_code": "saskatoon",
+      "city_id": 4,
+      "url": "https://www.rentfaster.ca/sk/saskatoon/",
+      "enabled": true,
+      "priority": 4
+    },
+    {
+      "name": "Winnipeg",
+      "province": "Manitoba",
+      "province_code": "mb",
+      "city_code": "winnipeg",
+      "city_id": 5,
+      "url": "https://www.rentfaster.ca/mb/winnipeg/",
+      "enabled": true,
+      "priority": 5
+    },
+    {
+      "name": "Vancouver",
+      "province": "British Columbia",
+      "province_code": "bc",
+      "city_code": "vancouver",
+      "city_id": 6,
+      "url": "https://www.rentfaster.ca/bc/vancouver/",
+      "enabled": true,
+      "priority": 6
+    },
+    {
+      "name": "Toronto",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "toronto",
+      "city_id": 7,
+      "url": "https://www.rentfaster.ca/on/toronto/",
+      "enabled": true,
+      "priority": 7
+    },
+    {
+      "name": "Airdrie",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "airdrie",
+      "city_id": 8,
+      "url": "https://www.rentfaster.ca/ab/airdrie/",
+      "enabled": true,
+      "priority": 8
+    },
+    {
+      "name": "Chestermere",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "chestermere",
+      "city_id": 12,
+      "url": "https://www.rentfaster.ca/ab/chestermere/",
+      "enabled": true,
+      "priority": 9
+    },
+    {
+      "name": "Cochrane",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "cochrane",
+      "city_id": 14,
+      "url": "https://www.rentfaster.ca/ab/cochrane/",
+      "enabled": true,
+      "priority": 10
+    },
+    {
+      "name": "Fort Saskatchewan",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "fort-saskatchewan",
+      "city_id": 31,
+      "url": "https://www.rentfaster.ca/ab/fort-saskatchewan/",
+      "enabled": true,
+      "priority": 11
+    },
+    {
+      "name": "Beaumont",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "beaumont",
+      "city_id": 36,
+      "url": "https://www.rentfaster.ca/ab/beaumont/",
+      "enabled": true,
+      "priority": 12
+    },
+    {
+      "name": "Leduc",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "leduc",
+      "city_id": 39,
+      "url": "https://www.rentfaster.ca/ab/leduc/",
+      "enabled": true,
+      "priority": 13
+    },
+    {
+      "name": "St. Albert",
+      "province": "Alberta",
+      "province_code": "ab",
+      "city_code": "st-albert",
+      "city_id": 43,
+      "url": "https://www.rentfaster.ca/ab/st-albert/",
+      "enabled": true,
+      "priority": 14
+    },
+    {
+      "name": "Surrey",
+      "province": "British Columbia",
+      "province_code": "bc",
+      "city_code": "surrey",
+      "city_id": 72,
+      "url": "https://www.rentfaster.ca/bc/surrey/",
+      "enabled": true,
+      "priority": 15
+    },
+    {
+      "name": "Victoria",
+      "province": "British Columbia",
+      "province_code": "bc",
+      "city_code": "victoria",
+      "city_id": 97,
+      "url": "https://www.rentfaster.ca/bc/victoria/",
+      "enabled": true,
+      "priority": 16
+    },
+    {
+      "name": "Brampton",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "brampton",
+      "city_id": 114,
+      "url": "https://www.rentfaster.ca/on/brampton/",
+      "enabled": true,
+      "priority": 17
+    },
+    {
+      "name": "Kitchener",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "kitchener",
+      "city_id": 127,
+      "url": "https://www.rentfaster.ca/on/kitchener/",
+      "enabled": true,
+      "priority": 18
+    },
+    {
+      "name": "London",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "london",
+      "city_id": 128,
+      "url": "https://www.rentfaster.ca/on/london/",
+      "enabled": true,
+      "priority": 19
+    },
+    {
+      "name": "Mississauga",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "mississauga",
+      "city_id": 139,
+      "url": "https://www.rentfaster.ca/on/mississauga/",
+      "enabled": true,
+      "priority": 20
+    },
+    {
+      "name": "Ottawa",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "ottawa",
+      "city_id": 149,
+      "url": "https://www.rentfaster.ca/on/ottawa/",
+      "enabled": true,
+      "priority": 21
+    },
+    {
+      "name": "Waterloo",
+      "province": "Ontario",
+      "province_code": "on",
+      "city_code": "waterloo",
+      "city_id": 155,
+      "url": "https://www.rentfaster.ca/on/waterloo/",
+      "enabled": true,
+      "priority": 22
+    }
+  ],
+  "default_city": "calgary",
+  "notes": [
+    "1. Set 'enabled: true' for cities you want to scrape",
+    "2. priority: lower numbers are scraped first",
+    "3. city_code is used for folder names inside raw/ (e.g., raw/calgary/, raw/edmonton/)",
+    "4. HTML files are stored in raw/{city_code}/ structure",
+    "5. All cities use city_id parameter for API requests",
+    "6. Discovered ALL 22 cities across Canada (city_id 1-155, scanned up to 2000)",
+    "7. Currently enabled: Calgary (1), Edmonton (2), Toronto (7)",
+    "8. Provinces covered: AB (12 cities), ON (8), BC (3), SK (2), MB (1)"
+  ]
+}

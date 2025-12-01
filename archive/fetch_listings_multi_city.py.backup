@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+"""
+[STEP 1] Fetch listings from multiple cities based on cities_config.json
+
+This script queries the RentFaster API for each enabled city and combines results.
+Uses Selenium to bypass Cloudflare protection.
+
+Reads: cities_config.json
+Outputs: rentfaster_listings.json
+"""
+
+import json
+import time
+from pathlib import Path
+from datetime import datetime
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+
+def load_cities_config():
+    """Load cities configuration"""
+    config_file = Path("cities_config.json")
+    
+    if not config_file.exists():
+        print("❌ cities_config.json not found!")
+        return []
+    
+    with open(config_file, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    enabled_cities = [city for city in config.get('cities', []) if city.get('enabled', False)]
+    enabled_cities.sort(key=lambda x: x.get('priority', 999))
+    
+    return enabled_cities
+
+def fetch_city_listings(city_config):
+    """Fetch listings for a specific city"""
+    print(f"\n📍 Fetching listings for {city_config['name']}...")
+    
+    # RentFaster API endpoint
+    api_url = "https://www.rentfaster.ca/api/search.json"
+    
+    all_listings = []
+    page = 1
+    max_pages = 200  # Safety limit
+    
+    # Query parameters
+    params = {
+        'proximity_type': 'location-city',
+        'cur_page': page,
+        'type': '',  # All types
+        'beds': '',  # All bedrooms
+        'keywords': city_config['city_code']
+    }
+    
+    while page <= max_pages:
+        try:
+            params['cur_page'] = page
+            print(f"   Page {page}...", end='', flush=True)
+            
+            response = requests.get(api_url, params=params, timeout=30)
+            response.raise_for_status()
+            
+            data = response.json()
+            listings = data.get('listings', [])
+            
+            if not listings:
+                print(f" ✓ (empty, done)")
+                break
+            
+            # Add city info to each listing
+            for listing in listings:
+                listing['city_code'] = city_config['city_code']
+                listing['province_code'] = city_config['province_code']
+            
+            all_listings.extend(listings)
+            print(f" ✓ ({len(listings)} listings)")
+            
+            # Check if there are more pages
+            total_count = data.get('total_count', 0)
+            if page * 48 >= total_count:  # 48 listings per page
+                break
+            
+            page += 1
+            time.sleep(0.5)  # Be nice to the API
+            
+        except requests.exceptions.RequestException as e:
+            print(f" ❌ Error: {e}")
+            break
+        except Exception as e:
+            print(f" ❌ Unexpected error: {e}")
+            break
+    
+    print(f"   Total: {len(all_listings):,} listings from {city_config['name']}")
+    return all_listings
+
+def main():
+    print("=" * 80)
+    print("🌍 RENTFASTER MULTI-CITY LISTINGS FETCHER")
+    print("=" * 80)
+    
+    # Load configuration
+    enabled_cities = load_cities_config()
+    
+    if not enabled_cities:
+        print("\n❌ No cities enabled in cities_config.json")
+        print("   Edit the file and set 'enabled: true' for at least one city")
+        return
+    
+    print(f"\n📋 Enabled cities: {', '.join(c['name'] for c in enabled_cities)}")
+    print(f"   Total: {len(enabled_cities)} cities")
+    
+    # Fetch listings for each city
+    all_listings = []
+    city_stats = {}
+    
+    for city in enabled_cities:
+        city_listings = fetch_city_listings(city)
+        all_listings.extend(city_listings)
+        city_stats[city['name']] = len(city_listings)
+    
+    # Remove duplicates by ref_id (in case of overlaps)
+    print(f"\n🔍 Removing duplicates...")
+    seen = set()
+    unique_listings = []
+    for listing in all_listings:
+        ref_id = listing.get('ref_id')
+        if ref_id and ref_id not in seen:
+            seen.add(ref_id)
+            unique_listings.append(listing)
+    
+    duplicates_removed = len(all_listings) - len(unique_listings)
+    if duplicates_removed > 0:
+        print(f"   Removed {duplicates_removed:,} duplicate listings")
+    
+    # Save to file
+    output_file = 'rentfaster_listings.json'
+    print(f"\n💾 Saving to {output_file}...")
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(unique_listings, f, ensure_ascii=False, indent=2)
+    
+    # Print summary
+    print("\n" + "=" * 80)
+    print("✅ FETCH COMPLETE!")
+    print("=" * 80)
+    print(f"\n📊 Summary by City:")
+    for city_name, count in city_stats.items():
+        print(f"   {city_name:15s}: {count:5,} listings")
+    print(f"   {'─' * 23}")
+    print(f"   {'Total (unique)':15s}: {len(unique_listings):5,} listings")
+    print(f"\n📁 Saved to: {output_file}")
+    print(f"⏰ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("\n💡 Next step: Run download_raw_html_parallel.py to download HTML files")
+    print("=" * 80)
+
+if __name__ == "__main__":
+    main()
