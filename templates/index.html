@@ -2566,14 +2566,6 @@
                             <p><strong>Bathrooms:</strong> ${data.completeness.baths.count.toLocaleString()} (${data.completeness.baths.percent}%)</p>
                         </div>
                         
-                        <!-- Multi-Unit Analysis -->
-                        <div style="border: 2px solid #f59e0b; border-radius: 10px; padding: 15px;">
-                            <h3 style="color: #f59e0b; margin-bottom: 10px;">🏢 Multi-Unit</h3>
-                            <p><strong>Buildings:</strong> ${data.multi_unit.buildings.toLocaleString()}</p>
-                            <p><strong>Unit Types:</strong> ${data.multi_unit.unit_types.toLocaleString()}</p>
-                            <p><strong>% of Total:</strong> ${data.multi_unit.percent_of_total}%</p>
-                        </div>
-                        
                         <!-- Price Stats -->
                         <div style="border: 2px solid #ef4444; border-radius: 10px; padding: 15px;">
                             <h3 style="color: #ef4444; margin-bottom: 10px;">💰 Price Stats</h3>
@@ -2615,7 +2607,6 @@
                         <ul style="color: #666; line-height: 1.8;">
                             <li>✅ <strong>${data.completeness.price.percent}%</strong> of listings have price information</li>
                             <li>✅ <strong>${data.completeness.sqft.percent}%</strong> of listings have square footage data</li>
-                            <li>✅ <strong>${data.multi_unit.buildings}</strong> multi-unit buildings detected with <strong>${data.multi_unit.unit_types}</strong> different unit types</li>
                             <li>✅ Price range: <strong>$${data.price_stats.min ? data.price_stats.min.toLocaleString() : 'N/A'}</strong> to <strong>$${data.price_stats.max ? data.price_stats.max.toLocaleString() : 'N/A'}</strong></li>
                             <li>✅ Average property size: <strong>${data.size_stats.avg ? data.size_stats.avg.toLocaleString() : 'N/A'} sq ft</strong></li>
                         </ul>

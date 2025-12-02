@@ -151,13 +151,6 @@ def enrich_listing(listing):
     # Availability
     enriched['immediately_available'] = 'Yes' if listing.get('availability') == 'Immediate' else 'No'
     
-    # Multi-unit info (ensure fields exist for display)
-    enriched['is_multi_unit'] = listing.get('is_multi_unit', False)
-    if enriched['is_multi_unit']:
-        enriched['parent_ref_id'] = listing.get('parent_ref_id')
-        enriched['unit_type'] = listing.get('unit_type')
-        enriched['building_address'] = listing.get('building_address')
-    
     # Utilities info (new detailed fields)
     utilities = listing.get('utilities_included', [])
     enriched['utilities_count'] = len(utilities) if isinstance(utilities, list) else 0
@@ -197,10 +190,6 @@ def get_stats():
         
         enriched = [enrich_listing(l) for l in listings]
         
-        # Count multi-unit info
-        multi_unit_listings = [l for l in listings if l.get('is_multi_unit')]
-        parent_ids = set(l.get('parent_ref_id') for l in multi_unit_listings if l.get('parent_ref_id'))
-        
         immediate = [l for l in enriched if l.get('immediately_available') == 'Yes']
         prices = [l['price_avg'] for l in enriched if l.get('price_avg')]
         sizes = [l['sqft_avg'] for l in enriched if l.get('sqft_avg')]
@@ -208,7 +197,6 @@ def get_stats():
         
         stats = {
             'total': len(listings),
-            'multi_unit_buildings': len(parent_ids),
             'immediate': len(immediate),
             'avg_price': round(sum(prices) / len(prices)) if prices else 0,
             'avg_size': round(sum(sizes) / len(sizes)) if sizes else 0,
@@ -238,10 +226,6 @@ def get_debug_info():
         has_community = sum(1 for l in listings if l.get('community'))
         has_link = sum(1 for l in listings if l.get('link'))
         has_availability = sum(1 for l in listings if l.get('availability'))
-        
-        # Multi-unit analysis
-        multi_unit = [l for l in listings if l.get('is_multi_unit')]
-        parent_ids = set(l.get('parent_ref_id') for l in multi_unit if l.get('parent_ref_id'))
         
         # Price analysis
         prices = []
@@ -303,11 +287,6 @@ def get_debug_info():
                 'community': {'count': has_community, 'percent': round(has_community/total*100, 1)},
                 'link': {'count': has_link, 'percent': round(has_link/total*100, 1)},
                 'availability': {'count': has_availability, 'percent': round(has_availability/total*100, 1)}
-            },
-            'multi_unit': {
-                'buildings': len(parent_ids),
-                'unit_types': len(multi_unit),
-                'percent_of_total': round(len(multi_unit)/total*100, 1) if total > 0 else 0
             },
             'price_stats': {
                 'count': len(prices),
