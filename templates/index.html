@@ -695,11 +695,11 @@
             width: 100%;
             border-radius: 8px;
             margin-bottom: 15px;
-            display: none;
+            display: block;
         }
 
-        #map.active {
-            display: block;
+        #map.hidden {
+            display: none;
         }
 
         .map-controls {
@@ -832,7 +832,7 @@
                 <div class="map-filter-header">
                     <h3>📍 Filtro por Localização</h3>
                     <button class="map-toggle-btn" onclick="toggleMap()">
-                        <span id="map-toggle-text">Mostrar Mapa</span>
+                        <span id="map-toggle-text">Ocultar Mapa</span>
                     </button>
                 </div>
                 
@@ -1512,16 +1512,16 @@
             const toggleText = document.getElementById('map-toggle-text');
             const locationInfo = document.getElementById('location-info');
             
-            if (mapElement.classList.contains('active')) {
-                mapElement.classList.remove('active');
-                toggleText.textContent = 'Mostrar Mapa';
-                locationInfo.style.display = 'none';
-            } else {
-                mapElement.classList.add('active');
+            if (mapElement.classList.contains('hidden')) {
+                mapElement.classList.remove('hidden');
                 toggleText.textContent = 'Ocultar Mapa';
                 locationInfo.style.display = 'block';
                 // Refresh map size after showing
                 setTimeout(() => map.invalidateSize(), 100);
+            } else {
+                mapElement.classList.add('hidden');
+                toggleText.textContent = 'Mostrar Mapa';
+                locationInfo.style.display = 'none';
             }
         }
 
