@@ -1090,6 +1090,47 @@
                 </div>
             </div>
 
+            <!-- Saved Filters Section -->
+            <div class="filter-section" style="border-top: 2px solid #dee2e6; padding-top: 20px; margin-top: 20px;">
+                <div class="filter-section-header">
+                    <div class="filter-section-title">
+                        💾 Filtros Salvos
+                    </div>
+                </div>
+                
+                <!-- Save Current Filter -->
+                <div class="filter-group" style="margin-bottom: 15px;">
+                    <label for="save-filter-name">Salvar Filtro Atual</label>
+                    <div class="filter-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="save-filter-name" 
+                            placeholder="Nome do filtro..."
+                            style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;"
+                        >
+                        <button class="clear-section-btn" onclick="saveCurrentFilter()" style="background: #28a745; color: white; border-color: #28a745;">
+                            💾 Salvar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Load Saved Filter -->
+                <div class="filter-group">
+                    <label for="saved-filters-dropdown">Carregar Filtro Salvo</label>
+                    <div class="filter-input-wrapper">
+                        <select id="saved-filters-dropdown" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" onchange="loadSavedFilter()">
+                            <option value="">-- Selecione um filtro --</option>
+                        </select>
+                        <button class="clear-filter-btn" onclick="deleteSavedFilter()" title="Deletar filtro selecionado" style="background: #dc3545; color: white; border-color: #dc3545;">
+                            🗑️
+                        </button>
+                    </div>
+                    <div class="multi-select-info" id="saved-filters-count" style="margin-top: 5px;">
+                        Nenhum filtro salvo
+                    </div>
+                </div>
+            </div>
+
             <div class="action-buttons" style="justify-content: space-between;">
                 <span id="active-filters-badge" class="active-filters-badge" style="display: none;"></span>
                 <div style="font-size: 0.9em; color: #666;">
@@ -2386,6 +2427,249 @@
                 content.innerHTML = `<p style="color: #ef4444; text-align: center;">Error loading debug info: ${error.message}</p>`;
             }
         }
+
+        // ========================================================================
+        // SAVED FILTERS FUNCTIONALITY
+        // ========================================================================
+
+        // Get current filter state
+        function getCurrentFilterState() {
+            return {
+                // Search
+                search: document.getElementById('filter-search').value,
+                
+                // City
+                city: Array.from(document.getElementById('filter-city').selectedOptions).map(o => o.value),
+                cityOperator: document.querySelector('input[name="city-operator"]:checked').value,
+                
+                // Basic filters
+                price: Array.from(document.getElementById('filter-price').selectedOptions).map(o => o.value),
+                priceOperator: document.querySelector('input[name="price-operator"]:checked').value,
+                beds: Array.from(document.getElementById('filter-beds').selectedOptions).map(o => o.value),
+                bedsOperator: document.querySelector('input[name="beds-operator"]:checked').value,
+                size: Array.from(document.getElementById('filter-size').selectedOptions).map(o => o.value),
+                sizeOperator: document.querySelector('input[name="size-operator"]:checked').value,
+                community: Array.from(document.getElementById('filter-community').selectedOptions).map(o => o.value),
+                communityOperator: document.querySelector('input[name="community-operator"]:checked').value,
+                
+                // Property features
+                parking: Array.from(document.getElementById('filter-parking').selectedOptions).map(o => o.value),
+                parkingOperator: document.querySelector('input[name="parking-operator"]:checked').value,
+                furnished: document.getElementById('filter-furnished').value,
+                unitType: Array.from(document.getElementById('filter-unit-type').selectedOptions).map(o => o.value),
+                unitTypeOperator: document.querySelector('input[name="unittype-operator"]:checked').value,
+                utilities: Array.from(document.getElementById('filter-utilities').selectedOptions).map(o => o.value),
+                utilitiesOperator: document.querySelector('input[name="utilities-operator"]:checked').value,
+                amenities: Array.from(document.getElementById('filter-amenities').selectedOptions).map(o => o.value),
+                amenitiesOperator: document.querySelector('input[name="amenities-operator"]:checked').value,
+                
+                // Quick filters
+                immediate: document.getElementById('filter-immediate').checked,
+                pets: document.getElementById('filter-pets').checked,
+                value: document.getElementById('filter-value').checked
+            };
+        }
+
+        // Apply filter state
+        function applyFilterState(state) {
+            // Search
+            document.getElementById('filter-search').value = state.search || '';
+            
+            // City
+            const citySelect = document.getElementById('filter-city');
+            Array.from(citySelect.options).forEach(option => {
+                option.selected = state.city.includes(option.value);
+            });
+            if (state.cityOperator === 'OR') document.getElementById('city-or').checked = true;
+            else document.getElementById('city-and').checked = true;
+            
+            // Price
+            const priceSelect = document.getElementById('filter-price');
+            Array.from(priceSelect.options).forEach(option => {
+                option.selected = state.price.includes(option.value);
+            });
+            if (state.priceOperator === 'OR') document.getElementById('price-or').checked = true;
+            else document.getElementById('price-and').checked = true;
+            
+            // Beds
+            const bedsSelect = document.getElementById('filter-beds');
+            Array.from(bedsSelect.options).forEach(option => {
+                option.selected = state.beds.includes(option.value);
+            });
+            if (state.bedsOperator === 'OR') document.getElementById('beds-or').checked = true;
+            else document.getElementById('beds-and').checked = true;
+            
+            // Size
+            const sizeSelect = document.getElementById('filter-size');
+            Array.from(sizeSelect.options).forEach(option => {
+                option.selected = state.size.includes(option.value);
+            });
+            if (state.sizeOperator === 'OR') document.getElementById('size-or').checked = true;
+            else document.getElementById('size-and').checked = true;
+            
+            // Community
+            const communitySelect = document.getElementById('filter-community');
+            Array.from(communitySelect.options).forEach(option => {
+                option.selected = state.community.includes(option.value);
+            });
+            if (state.communityOperator === 'OR') document.getElementById('community-or').checked = true;
+            else document.getElementById('community-and').checked = true;
+            
+            // Parking
+            const parkingSelect = document.getElementById('filter-parking');
+            Array.from(parkingSelect.options).forEach(option => {
+                option.selected = state.parking.includes(option.value);
+            });
+            if (state.parkingOperator === 'OR') document.getElementById('parking-or').checked = true;
+            else document.getElementById('parking-and').checked = true;
+            
+            // Furnished
+            document.getElementById('filter-furnished').value = state.furnished || '';
+            
+            // Unit Type
+            const unitTypeSelect = document.getElementById('filter-unit-type');
+            Array.from(unitTypeSelect.options).forEach(option => {
+                option.selected = state.unitType.includes(option.value);
+            });
+            if (state.unitTypeOperator === 'OR') document.getElementById('unittype-or').checked = true;
+            else document.getElementById('unittype-and').checked = true;
+            
+            // Utilities
+            const utilitiesSelect = document.getElementById('filter-utilities');
+            Array.from(utilitiesSelect.options).forEach(option => {
+                option.selected = state.utilities.includes(option.value);
+            });
+            if (state.utilitiesOperator === 'OR') document.getElementById('utilities-or').checked = true;
+            else document.getElementById('utilities-and').checked = true;
+            
+            // Amenities
+            const amenitiesSelect = document.getElementById('filter-amenities');
+            Array.from(amenitiesSelect.options).forEach(option => {
+                option.selected = state.amenities.includes(option.value);
+            });
+            if (state.amenitiesOperator === 'OR') document.getElementById('amenities-or').checked = true;
+            else document.getElementById('amenities-and').checked = true;
+            
+            // Quick filters
+            document.getElementById('filter-immediate').checked = state.immediate || false;
+            document.getElementById('filter-pets').checked = state.pets || false;
+            document.getElementById('filter-value').checked = state.value || false;
+            
+            // Apply filters
+            applyFilters();
+        }
+
+        // Save current filter
+        function saveCurrentFilter() {
+            const nameInput = document.getElementById('save-filter-name');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                alert('Por favor, digite um nome para o filtro.');
+                return;
+            }
+            
+            // Get current filter state
+            const filterState = getCurrentFilterState();
+            
+            // Get saved filters from localStorage
+            let savedFilters = JSON.parse(localStorage.getItem('rentfaster_saved_filters') || '{}');
+            
+            // Save the filter
+            savedFilters[name] = {
+                state: filterState,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('rentfaster_saved_filters', JSON.stringify(savedFilters));
+            
+            // Clear input and update dropdown
+            nameInput.value = '';
+            updateSavedFiltersDropdown();
+            
+            showClearFeedback(`Filtro "${name}" salvo com sucesso! ✅`);
+        }
+
+        // Load saved filter
+        function loadSavedFilter() {
+            const dropdown = document.getElementById('saved-filters-dropdown');
+            const selectedName = dropdown.value;
+            
+            if (!selectedName) return;
+            
+            // Get saved filters
+            const savedFilters = JSON.parse(localStorage.getItem('rentfaster_saved_filters') || '{}');
+            
+            if (savedFilters[selectedName]) {
+                applyFilterState(savedFilters[selectedName].state);
+                showClearFeedback(`Filtro "${selectedName}" carregado! ✅`);
+            }
+        }
+
+        // Delete saved filter
+        function deleteSavedFilter() {
+            const dropdown = document.getElementById('saved-filters-dropdown');
+            const selectedName = dropdown.value;
+            
+            if (!selectedName) {
+                alert('Por favor, selecione um filtro para deletar.');
+                return;
+            }
+            
+            if (!confirm(`Tem certeza que deseja deletar o filtro "${selectedName}"?`)) {
+                return;
+            }
+            
+            // Get saved filters
+            let savedFilters = JSON.parse(localStorage.getItem('rentfaster_saved_filters') || '{}');
+            
+            // Delete the filter
+            delete savedFilters[selectedName];
+            
+            localStorage.setItem('rentfaster_saved_filters', JSON.stringify(savedFilters));
+            
+            // Update dropdown
+            updateSavedFiltersDropdown();
+            
+            showClearFeedback(`Filtro "${selectedName}" deletado! 🗑️`);
+        }
+
+        // Update saved filters dropdown
+        function updateSavedFiltersDropdown() {
+            const dropdown = document.getElementById('saved-filters-dropdown');
+            const countLabel = document.getElementById('saved-filters-count');
+            
+            // Get saved filters
+            const savedFilters = JSON.parse(localStorage.getItem('rentfaster_saved_filters') || '{}');
+            const filterNames = Object.keys(savedFilters).sort();
+            
+            // Clear dropdown
+            dropdown.innerHTML = '<option value="">-- Selecione um filtro --</option>';
+            
+            // Add filters to dropdown
+            filterNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                const savedAt = new Date(savedFilters[name].savedAt);
+                option.textContent = `${name} (${savedAt.toLocaleDateString()})`;
+                dropdown.appendChild(option);
+            });
+            
+            // Update count
+            if (filterNames.length === 0) {
+                countLabel.textContent = 'Nenhum filtro salvo';
+            } else if (filterNames.length === 1) {
+                countLabel.textContent = '1 filtro salvo';
+            } else {
+                countLabel.textContent = `${filterNames.length} filtros salvos`;
+            }
+        }
+
+        // Initialize saved filters on page load
+        setTimeout(() => {
+            updateSavedFiltersDropdown();
+        }, 500);
+
     </script>
 </body>
 </html>
