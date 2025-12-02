@@ -2315,6 +2315,11 @@
                     <div class="listing-price">
                         <div class="price-main">$${listing.price_avg ? Math.round(listing.price_avg).toLocaleString() : listing.price || 'Call'}</div>
                         <div class="price-detail">per month</div>
+                        ${listing.latitude && listing.longitude ? `
+                        <button class="view-btn" style="background: #00a389; margin-bottom: 8px; border: none; cursor: pointer; width: 100%;" onclick="setLocationMarker(${listing.latitude}, ${listing.longitude}); map.setView([${listing.latitude}, ${listing.longitude}], 15); document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });">
+                            🎯 Point of Interest
+                        </button>
+                        ` : ''}
                         <a href="${listing.link}" target="_blank" class="view-btn">View Details →</a>
                     </div>
                 </div>
