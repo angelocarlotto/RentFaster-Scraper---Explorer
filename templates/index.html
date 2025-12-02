@@ -1108,13 +1108,21 @@
                     </label>
                     <div class="filter-input-wrapper">
                         <select id="filter-unit-type" multiple style="flex: 1;">
-                            <option value="apartment">Apartamento</option>
-                            <option value="condo">Condomínio</option>
-                            <option value="house">Casa</option>
-                            <option value="townhouse">Townhouse</option>
-                            <option value="duplex">Duplex</option>
-                            <option value="basement">Porão</option>
-                            <option value="multi-unit">Prédio Multi-Unidades</option>
+                            <option value="Apartment">Apartment (3,746)</option>
+                            <option value="Condo Unit">Condo Unit (2,298)</option>
+                            <option value="House">House (1,863)</option>
+                            <option value="Basement">Basement (1,799)</option>
+                            <option value="Townhouse">Townhouse (1,396)</option>
+                            <option value="Main Floor">Main Floor (680)</option>
+                            <option value="Room For Rent">Room For Rent (515)</option>
+                            <option value="Duplex">Duplex (490)</option>
+                            <option value="Fourplex">Fourplex (71)</option>
+                            <option value="Garage Suite">Garage Suite (37)</option>
+                            <option value="Loft">Loft (27)</option>
+                            <option value="Other">Other (22)</option>
+                            <option value="Office Space">Office Space (22)</option>
+                            <option value="Storage">Storage (19)</option>
+                            <option value="Triplex">Triplex (10)</option>
                         </select>
                         <button class="clear-filter-btn" onclick="clearIndividualFilter('filter-unit-type')" title="Limpar tipo">✕</button>
                     </div>
@@ -1133,11 +1141,13 @@
                     </label>
                     <div class="filter-input-wrapper">
                         <select id="filter-utilities" multiple style="flex: 1;">
-                            <option value="heat">Aquecimento</option>
-                            <option value="water">Água</option>
-                            <option value="electricity">Eletricidade</option>
-                            <option value="internet">Internet</option>
-                            <option value="cable">TV a Cabo</option>
+                            <option value="Gas">Gas (9,672)</option>
+                            <option value="Water">Water (5,384)</option>
+                            <option value="Heat">Heat (5,348)</option>
+                            <option value="Internet">Internet (2,863)</option>
+                            <option value="Electricity">Electricity (2,209)</option>
+                            <option value="Cable">Cable (1,500)</option>
+                            <option value="Hydro">Hydro (250)</option>
                         </select>
                         <button class="clear-filter-btn" onclick="clearIndividualFilter('filter-utilities')" title="Limpar utilidades">✕</button>
                     </div>
@@ -1156,14 +1166,19 @@
                     </label>
                     <div class="filter-input-wrapper">
                         <select id="filter-amenities" multiple size="5" style="flex: 1;">
-                            <option value="gym">Academia</option>
-                            <option value="laundry">Lavanderia</option>
-                            <option value="balcony">Varanda</option>
-                            <option value="dishwasher">Lava-louças</option>
-                            <option value="air conditioning">Ar Condicionado</option>
-                            <option value="elevator">Elevador</option>
-                            <option value="storage">Depósito</option>
-                            <option value="parking">Estacionamento</option>
+                            <option value="Laundry">Laundry (9,016)</option>
+                            <option value="Dishwasher">Dishwasher (6,784)</option>
+                            <option value="Pool">Pool (5,755)</option>
+                            <option value="Security">Security (5,116)</option>
+                            <option value="Storage">Storage (4,531)</option>
+                            <option value="Balcony">Balcony (4,138)</option>
+                            <option value="Air Conditioning">Air Conditioning (3,127)</option>
+                            <option value="Patio">Patio (2,618)</option>
+                            <option value="Elevator">Elevator (2,430)</option>
+                            <option value="Fitness">Fitness (1,796)</option>
+                            <option value="Gym">Gym (965)</option>
+                            <option value="Bike Room">Bike Room (949)</option>
+                            <option value="Concierge">Concierge (754)</option>
                         </select>
                         <button class="clear-filter-btn" onclick="clearIndividualFilter('filter-amenities')" title="Limpar comodidades">✕</button>
                     </div>
@@ -2066,17 +2081,9 @@
                 if (unitTypeOptions.length > 0) {
                     const unitTypeMatches = unitTypeOptions.map(type => {
                         // Check the 'type' field which contains the actual unit type
-                        const listingType = listing.type ? listing.type.toLowerCase() : '';
-                        const buildingType = listing.building_type ? listing.building_type.toLowerCase() : '';
-                        const unitType = listing.unit_type ? listing.unit_type.toLowerCase() : '';
-                        const isMultiUnit = listing.is_multi_unit || false;
-                        
-                        if (type === 'multi-unit') {
-                            return (isMultiUnit);
-                        } else {
-                            // Check 'type' field first (primary field), then fallback to others
-                            return (listingType.includes(type) || buildingType.includes(type) || unitType.includes(type));
-                        }
+                        const listingType = listing.type || '';
+                        // Match exact type or if type contains comma-separated values
+                        return listingType === type || listingType.includes(type);
                     });
                     unitTypeResult = (unitTypeOp === 'AND')
                         ? unitTypeMatches.every(match => match)
@@ -2089,7 +2096,7 @@
                     const utilitiesMatches = utilitiesOptions.map(utility => {
                         return (listing.utilities_included && 
                                Array.isArray(listing.utilities_included) && 
-                               listing.utilities_included.some(u => u.toLowerCase().includes(utility.toLowerCase())));
+                               listing.utilities_included.includes(utility));
                     });
                     utilitiesResult = (utilitiesOp === 'AND')
                         ? utilitiesMatches.every(match => match)
@@ -2102,7 +2109,7 @@
                     const amenitiesMatches = amenitiesOptions.map(amenity => {
                         return (listing.amenities && 
                                Array.isArray(listing.amenities) && 
-                               listing.amenities.some(a => a.toLowerCase().includes(amenity.toLowerCase())));
+                               listing.amenities.includes(amenity));
                     });
                     amenitiesResult = (amenitiesOp === 'AND')
                         ? amenitiesMatches.every(match => match)
