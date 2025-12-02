@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>RentFaster - Multi-City Rental Explorer</title>
+    <title>rentfaster - Find Your Perfect Rental</title>
     
     <!-- Leaflet Map Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -21,7 +21,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #fce7f3 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -73,9 +73,15 @@
         }
 
         h1 {
-            color: #667eea;
+            color: #00a389;
             font-size: 2.5em;
             margin-bottom: 10px;
+            font-weight: 400;
+        }
+        
+        h1 .brand-fast {
+            font-style: italic;
+            font-weight: 300;
         }
 
         .subtitle {
@@ -107,7 +113,7 @@
         .stat-value {
             font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: #00a389;
             margin-bottom: 5px;
         }
 
@@ -194,7 +200,7 @@
         .filter-group input:focus,
         .filter-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00a389;
         }
 
         .multi-select-info {
@@ -232,7 +238,7 @@
         }
 
         .active-filters-badge {
-            background: #667eea;
+            background: #00a389;
             color: white;
             padding: 8px 15px;
             border-radius: 20px;
@@ -337,7 +343,7 @@
         }
 
         .operator-toggle input[type="radio"]:checked + label {
-            background: #667eea;
+            background: #00a389;
             color: white;
         }
 
@@ -352,14 +358,14 @@
         }
 
         .btn-primary {
-            background: #667eea;
+            background: #00a389;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #5568d3;
+            background: #008c74;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 163, 137, 0.4);
         }
 
         .btn-secondary {
@@ -423,7 +429,7 @@
         }
 
         .listing-card:hover {
-            border-color: #667eea;
+            border-color: #00a389;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
         }
 
@@ -471,7 +477,7 @@
 
         .spec-icon {
             font-weight: bold;
-            color: #667eea;
+            color: #00a389;
         }
 
         .listing-tags {
@@ -513,7 +519,7 @@
         .price-main {
             font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: #00a389;
         }
 
         .price-detail {
@@ -523,7 +529,7 @@
 
         .view-btn {
             padding: 10px 20px;
-            background: #667eea;
+            background: #00a389;
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -586,12 +592,12 @@
         }
 
         .map-filter-header h3 {
-            color: #667eea;
+            color: #00a389;
             font-size: 1.3em;
         }
 
         .map-toggle-btn {
-            background: #667eea;
+            background: #00a389;
             color: white;
             border: none;
             padding: 8px 15px;
@@ -640,7 +646,7 @@
         }
 
         .radius-value {
-            background: #667eea;
+            background: #00a389;
             color: white;
             padding: 5px 12px;
             border-radius: 5px;
@@ -677,9 +683,9 @@
 <body>
     <div class="container">
         <header>
-            <h1>🏠 RentFaster - Multi-City Explorer</h1>
+            <h1>rent<span class="brand-fast">faster</span></h1>
             <p class="subtitle">Explore <span id="total-count">0</span> rental listings across all cities</p>
-            <button onclick="toggleDebugPanel()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+            <button onclick="toggleDebugPanel()" style="margin-top: 15px; padding: 10px 20px; background: #00a389; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
                 🐛 Debug Info
             </button>
         </header>
@@ -687,7 +693,7 @@
         <!-- Debug Panel -->
         <div id="debug-panel" style="display: none; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: #667eea;">📊 Dataset Diagnostics</h2>
+                <h2 style="color: #00a389;">📊 Dataset Diagnostics</h2>
                 <button onclick="toggleDebugPanel()" style="padding: 8px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
             </div>
             
@@ -736,7 +742,7 @@
             <div class="filters-sidebar">
         <div class="filters">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0; color: #667eea;">🔍 Filtros</h2>
+                <h2 style="margin: 0; color: #00a389;">🔍 Filtros</h2>
                 <button class="btn btn-secondary" onclick="clearAllFilters()" style="padding: 8px 20px;">
                     🗑️ Limpar Todos os Filtros
                 </button>
@@ -1430,8 +1436,8 @@
 
             // Add circle showing radius
             mapCircle = L.circle([lat, lng], {
-                color: '#667eea',
-                fillColor: '#667eea',
+                color: '#00a389',
+                fillColor: '#00a389',
                 fillOpacity: 0.2,
                 radius: selectedRadius * 1000 // Convert km to meters
             }).addTo(map);
@@ -2458,8 +2464,8 @@
                 content.innerHTML = `
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                         <!-- Dataset Info -->
-                        <div style="border: 2px solid #667eea; border-radius: 10px; padding: 15px;">
-                            <h3 style="color: #667eea; margin-bottom: 10px;">📦 Dataset</h3>
+                        <div style="border: 2px solid #00a389; border-radius: 10px; padding: 15px;">
+                            <h3 style="color: #00a389; margin-bottom: 10px;">📦 Dataset</h3>
                             <p><strong>Total Entries:</strong> ${data.dataset.total_entries.toLocaleString()}</p>
                             <p><strong>Data Source:</strong> ${data.dataset.data_source}</p>
                             <p><strong>File Size:</strong> ${data.dataset.file_size_mb} MB</p>
@@ -2519,7 +2525,7 @@
                     </div>
                     
                     <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-                        <h3 style="color: #667eea; margin-bottom: 10px;">💡 Data Quality Insights</h3>
+                        <h3 style="color: #00a389; margin-bottom: 10px;">💡 Data Quality Insights</h3>
                         <ul style="color: #666; line-height: 1.8;">
                             <li>✅ <strong>${data.completeness.price.percent}%</strong> of listings have price information</li>
                             <li>✅ <strong>${data.completeness.sqft.percent}%</strong> of listings have square footage data</li>
