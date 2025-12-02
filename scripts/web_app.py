@@ -13,10 +13,21 @@ from flask import Flask, render_template, jsonify, send_from_directory
 import json
 import os
 
-app = Flask(__name__)
+# Get the parent directory (project root)
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Configure Flask to use parent directory for templates and static files
+app = Flask(__name__, 
+            template_folder=os.path.join(project_root, 'templates'),
+            static_folder=os.path.join(project_root, 'static'))
 
 # Load data - use offline scraped data only
-LISTINGS_JSON = 'rentfaster_detailed_offline.json' if os.path.exists('rentfaster_detailed_offline.json') else 'rentfaster_listings.json'
+data_dir = os.path.join(project_root, 'data')
+LISTINGS_JSON = os.path.join(data_dir, 'rentfaster_detailed_offline.json') if os.path.exists(os.path.join(data_dir, 'rentfaster_detailed_offline.json')) else os.path.join(data_dir, 'rentfaster_listings.json')
+
+# Cache for listings data with file modification time
+_listings_cache = None
+_cache_mtime = None
 
 @app.route('/')
 def index():
@@ -25,19 +36,30 @@ def index():
 
 @app.route('/api/listings')
 def get_listings():
-    """API endpoint to get all listings"""
+    """API endpoint to get all listings - auto-reloads when file changes"""
+    global _listings_cache, _cache_mtime
+    
     try:
-        # Load and enrich data
-        with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:
-            listings = json.load(f)
+        # Check if file has been modified
+        current_mtime = os.path.getmtime(LISTINGS_JSON)
         
-        # Enrich with calculated fields
-        enriched = []
-        for listing in listings:
-            enriched_listing = enrich_listing(listing)
-            enriched.append(enriched_listing)
+        # Reload if cache is empty or file has changed
+        if _listings_cache is None or _cache_mtime != current_mtime:
+            print(f"📥 Reloading data from {LISTINGS_JSON}")
+            with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:
+                listings = json.load(f)
+            
+            # Enrich with calculated fields
+            enriched = []
+            for listing in listings:
+                enriched_listing = enrich_listing(listing)
+                enriched.append(enriched_listing)
+            
+            _listings_cache = enriched
+            _cache_mtime = current_mtime
+            print(f"✓ Loaded {len(enriched):,} listings")
         
-        return jsonify(enriched)
+        return jsonify(_listings_cache)
     except Exception as e:
         print(f"Error loading listings: {e}")
         return jsonify({'error': str(e)}), 500
@@ -153,6 +175,11 @@ def enrich_listing(listing):
     parking = listing.get('parking_spots')
     enriched['has_parking'] = parking is not None and parking > 0
     enriched['parking_spots'] = parking if parking else 0
+    
+    # Fix link to include full URL
+    link = listing.get('link', '')
+    if link and not link.startswith('http'):
+        enriched['link'] = f'https://www.rentfaster.ca{link}'
     
     return enriched
 

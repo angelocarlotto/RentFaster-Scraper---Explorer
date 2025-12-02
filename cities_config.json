@@ -7,7 +7,7 @@
       "city_code": "calgary",
       "city_id": 1,
       "url": "https://www.rentfaster.ca/ab/calgary/",
-      "enabled": false,
+      "enabled": true,
       "priority": 1
     },
     {

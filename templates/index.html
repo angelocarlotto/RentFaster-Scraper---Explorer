@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>RentFaster Calgary - Rental Explorer v2</title>
+    <title>RentFaster - Multi-City Rental Explorer</title>
     
     <!-- Leaflet Map Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -651,8 +651,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>🏠 RentFaster Calgary</h1>
-            <p class="subtitle">Explore <span id="total-count">7,042</span> rental listings in Calgary</p>
+            <h1>🏠 RentFaster - Multi-City Explorer</h1>
+            <p class="subtitle">Explore <span id="total-count">0</span> rental listings across all cities</p>
             <button onclick="toggleDebugPanel()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
                 🐛 Debug Info
             </button>
@@ -672,25 +672,25 @@
 
         <div class="stats-grid" id="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" id="stat-avg-price">$1,835</div>
+                <div class="stat-value" id="stat-avg-price">...</div>
                 <div class="stat-label">Average Rent</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="stat-avg-size">1,074</div>
+                <div class="stat-value" id="stat-avg-size">...</div>
                 <div class="stat-label">Avg Size (sq ft)</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="stat-avg-cost">$1.71</div>
+                <div class="stat-value" id="stat-avg-cost">...</div>
                 <div class="stat-label">Avg $/sq ft</div>
             </div>
             <div class="stat-card" title="Listings with 'Immediate' availability out of total listings">
                 <div class="stat-value">
-                    <span id="stat-immediate">4,803</span>
-                    <span style="font-size: 0.5em; color: #999;"> / <span id="stat-total-inline">6,811</span></span>
+                    <span id="stat-immediate">...</span>
+                    <span style="font-size: 0.5em; color: #999;"> / <span id="stat-total-inline">...</span></span>
                 </div>
                 <div class="stat-label">Available Now</div>
                 <div style="font-size: 0.75em; color: #666; margin-top: 5px;">
-                    📅 <span id="stat-percentage">71%</span> disponível imediatamente
+                    📅 <span id="stat-percentage">...</span> disponível imediatamente
                 </div>
             </div>
         </div>
@@ -762,6 +762,52 @@
                     <div class="multi-select-info" style="margin-top: 5px;">
                         Digite para buscar no título/nome do imóvel
                     </div>
+                </div>
+            </div>
+
+            <!-- City Filter Section -->
+            <div class="filter-section">
+                <div class="filter-section-header">
+                    <div class="filter-section-title">
+                        🏙️ Filtro por Cidade
+                    </div>
+                    <button class="clear-section-btn" onclick="clearCityFilter()">🗑️ Limpar</button>
+                </div>
+                <div class="filter-group">
+                    <label>
+                        Cidades
+                        <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
+                            <input type="radio" id="city-and" name="city-operator" value="AND" checked>
+                            <label for="city-and">AND</label>
+                            <input type="radio" id="city-or" name="city-operator" value="OR">
+                            <label for="city-or">OR</label>
+                        </div>
+                    </label>
+                    <select id="filter-city" multiple>
+                        <option value="calgary">Calgary</option>
+                        <option value="edmonton">Edmonton</option>
+                        <option value="toronto">Toronto</option>
+                        <option value="ottawa">Ottawa</option>
+                        <option value="mississauga">Mississauga</option>
+                        <option value="winnipeg">Winnipeg</option>
+                        <option value="vancouver">Vancouver</option>
+                        <option value="brampton">Brampton</option>
+                        <option value="airdrie">Airdrie</option>
+                        <option value="london">London</option>
+                        <option value="saskatoon">Saskatoon</option>
+                        <option value="regina">Regina</option>
+                        <option value="cochrane">Cochrane</option>
+                        <option value="victoria">Victoria</option>
+                        <option value="chestermere">Chestermere</option>
+                        <option value="kitchener">Kitchener</option>
+                        <option value="leduc">Leduc</option>
+                        <option value="st. albert">St. Albert</option>
+                        <option value="fort saskatchewan">Fort Saskatchewan</option>
+                        <option value="surrey">Surrey</option>
+                        <option value="waterloo">Waterloo</option>
+                        <option value="beaumont">Beaumont</option>
+                    </select>
+                    <div class="multi-select-info">Ctrl/Cmd + clique para selecionar várias cidades</div>
                 </div>
             </div>
 
@@ -1147,6 +1193,7 @@
             document.getElementById('filter-search').addEventListener('input', applyFiltersDebounced);
             
             // Using debounced version for select elements that might change rapidly
+            document.getElementById('filter-city').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-price').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-beds').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-size').addEventListener('change', applyFiltersDebounced);
@@ -1163,6 +1210,8 @@
             document.getElementById('filter-value').addEventListener('change', applyFilters);
             
             // Operators for each filter
+            document.getElementById('city-and').addEventListener('change', applyFilters);
+            document.getElementById('city-or').addEventListener('change', applyFilters);
             document.getElementById('price-and').addEventListener('change', applyFilters);
             document.getElementById('price-or').addEventListener('change', applyFilters);
             document.getElementById('beds-and').addEventListener('change', applyFilters);
@@ -1640,6 +1689,7 @@
             const searchText = document.getElementById('filter-search').value.toLowerCase().trim();
             
             // Get selected values from multi-select
+            const cityOptions = Array.from(document.getElementById('filter-city').selectedOptions).map(o => o.value);
             const priceOptions = Array.from(document.getElementById('filter-price').selectedOptions).map(o => o.value);
             const bedsOptions = Array.from(document.getElementById('filter-beds').selectedOptions).map(o => o.value);
             const sizeOptions = Array.from(document.getElementById('filter-size').selectedOptions).map(o => o.value);
@@ -1656,6 +1706,7 @@
             const sortBy = document.getElementById('sort-by').value;
             
             // Get operators for each individual filter
+            const cityOp = document.querySelector('input[name="city-operator"]:checked')?.value || 'AND';
             const priceOp = document.querySelector('input[name="price-operator"]:checked')?.value || 'AND';
             const bedsOp = document.querySelector('input[name="beds-operator"]:checked')?.value || 'AND';
             const sizeOp = document.querySelector('input[name="size-operator"]:checked')?.value || 'AND';
@@ -1671,6 +1722,18 @@
                 if (searchText) {
                     const listingTitle = (listing.title || '').toLowerCase();
                     searchResult = listingTitle.includes(searchText);
+                }
+
+                // City filter (with individual operator)
+                let cityResult = true;
+                if (cityOptions.length > 0) {
+                    const cityMatches = cityOptions.map(city => {
+                        const listingCity = (listing.city || listing.city_code || '').toLowerCase();
+                        return listingCity === city.toLowerCase();
+                    });
+                    cityResult = (cityOp === 'AND')
+                        ? cityMatches.every(match => match)
+                        : cityMatches.some(match => match);
                 }
 
                 // Price filter (with individual operator)
@@ -1760,6 +1823,8 @@
                 let unitTypeResult = true;
                 if (unitTypeOptions.length > 0) {
                     const unitTypeMatches = unitTypeOptions.map(type => {
+                        // Check the 'type' field which contains the actual unit type
+                        const listingType = listing.type ? listing.type.toLowerCase() : '';
                         const buildingType = listing.building_type ? listing.building_type.toLowerCase() : '';
                         const unitType = listing.unit_type ? listing.unit_type.toLowerCase() : '';
                         const isMultiUnit = listing.is_multi_unit || false;
@@ -1767,7 +1832,8 @@
                         if (type === 'multi-unit') {
                             return (isMultiUnit);
                         } else {
-                            return (buildingType.includes(type) || unitType.includes(type));
+                            // Check 'type' field first (primary field), then fallback to others
+                            return (listingType.includes(type) || buildingType.includes(type) || unitType.includes(type));
                         }
                     });
                     unitTypeResult = (unitTypeOp === 'AND')
@@ -1821,7 +1887,7 @@
 
                 // ALL filters must pass (AND between all filters)
                 // Enclosing each filter result in parentheses for clarity (though not strictly necessary here)
-                return (searchResult) && (priceResult) && (bedsResult) && (sizeResult) && (communityResult) && 
+                return (searchResult) && (cityResult) && (priceResult) && (bedsResult) && (sizeResult) && (communityResult) && 
                        (parkingResult) && (furnishedResult) && (unitTypeResult) && (utilitiesResult) && 
                        (amenitiesResult) && (quickResult) && (locationResult);
             });
@@ -1832,6 +1898,7 @@
             console.log('Filtered listings:', filteredListings.length);
             console.log('Active filters:', {
                 search: searchText || 'none',
+                city: cityOptions.length > 0 ? cityOptions : 'none',
                 price: priceOptions.length > 0 ? priceOptions : 'none',
                 beds: bedsOptions.length > 0 ? bedsOptions : 'none',
                 size: sizeOptions.length > 0 ? sizeOptions : 'none',
@@ -1987,6 +2054,13 @@
             applyFilters();
         }
 
+        function clearCityFilter() {
+            document.getElementById('filter-city').selectedIndex = -1;
+            document.getElementById('city-and').checked = true;
+            showClearFeedback('Filtro de Cidade limpo');
+            applyFilters();
+        }
+
         function clearBasicFilters() {
             document.getElementById('filter-price').selectedIndex = -1;
             document.getElementById('filter-beds').selectedIndex = -1;
@@ -2029,6 +2103,7 @@
             document.getElementById('filter-search').value = '';
             
             // Clear all multi-select options
+            document.getElementById('filter-city').selectedIndex = -1;
             document.getElementById('filter-price').selectedIndex = -1;
             document.getElementById('filter-beds').selectedIndex = -1;
             document.getElementById('filter-size').selectedIndex = -1;
@@ -2048,6 +2123,7 @@
             document.getElementById('sort-by').value = 'cost_asc';
             
             // Reset all individual operators to AND (default)
+            document.getElementById('city-and').checked = true;
             document.getElementById('price-and').checked = true;
             document.getElementById('beds-and').checked = true;
             document.getElementById('size-and').checked = true;

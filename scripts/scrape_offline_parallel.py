@@ -282,9 +282,11 @@ def scrape_batch_worker(batch_data):
         with stats_lock:
             stats['active_workers'] -= 1
 
-def save_progress(data, filename='rentfaster_detailed_offline.json'):
+def save_progress(data, filename='data/rentfaster_detailed_offline.json'):
     """Thread-safe save progress to JSON file"""
     with file_lock:
+        # Ensure data directory exists
+        Path('data').mkdir(exist_ok=True)
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -473,7 +475,7 @@ def main():
         print(f"{'='*80}")
         print(f"   Total in database: {len(new_listings):,}")
         print(f"\n   📁 File saved:")
-        print(f"      • rentfaster_detailed_offline.json ({len(new_listings):,} listings)")
+        print(f"      • data/rentfaster_detailed_offline.json ({len(new_listings):,} listings)")
         print(f"{'='*80}\n")
         
         # Show parking stats

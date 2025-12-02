@@ -17,4 +17,7 @@
   Estimated time:       ~18.9 minutes
 ================================================================================
 
-Press Enter to start (or Ctrl+C to cancel)...
+Press Enter to start (or Ctrl+C to cancel)...Traceback (most recent call last):
+  File "/Users/angelocarlotto/Desktop/github2/rentfaster_scrap/download_raw_html_parallel.py", line 438, in <module>
+  File "/Users/angelocarlotto/Desktop/github2/rentfaster_scrap/download_raw_html_parallel.py", line 428, in main
+OSError: [Errno 5] Input/output error
