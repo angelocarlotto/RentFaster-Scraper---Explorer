@@ -840,6 +840,10 @@
                 
                 <div class="map-controls">
                     <div class="radius-control">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <input type="checkbox" id="radius-filter-enabled" style="cursor: pointer;">
+                            <label for="radius-filter-enabled" style="margin: 0; cursor: pointer;">Aplicar filtro de raio</label>
+                        </div>
                         <label for="radius-slider">Raio:</label>
                         <input type="range" id="radius-slider" min="0.5" max="20" step="0.5" value="5">
                         <span class="radius-value"><span id="radius-value">5</span> km</span>
@@ -1487,6 +1491,20 @@
                     applyFilters();
                 }
             });
+
+            // Radius checkbox event
+            document.getElementById('radius-filter-enabled').addEventListener('change', function(e) {
+                if (selectedLocation) {
+                    const locationInfo = document.getElementById('location-info');
+                    const radiusFilterEnabled = e.target.checked;
+                    if (radiusFilterEnabled) {
+                        locationInfo.innerHTML = `📍 <strong>Localização selecionada:</strong> ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)} | 🎯 <strong>Filtro ativo:</strong> ${selectedRadius} km de raio`;
+                    } else {
+                        locationInfo.innerHTML = `📍 <strong>Localização selecionada:</strong> ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)} | 📏 <strong>Distâncias calculadas</strong> (raio: ${selectedRadius} km - filtro desativado)`;
+                    }
+                    applyFilters();
+                }
+            });
         }
 
         function toggleMap() {
@@ -1520,13 +1538,21 @@
             selectedLocation = { lat, lng };
 
             // Calculate and cache distance for all listings
+            let zeroDistanceCount = 0;
             allListings.forEach(listing => {
                 if (listing.latitude && listing.longitude) {
-                    listing._distance = calculateDistance(lat, lng, listing.latitude, listing.longitude);
+                    const listingLat = parseFloat(listing.latitude);
+                    const listingLng = parseFloat(listing.longitude);
+                    listing._distance = calculateDistance(lat, lng, listingLat, listingLng);
+                    if (listing._distance === 0) {
+                        zeroDistanceCount++;
+                        console.log('✓ Listing with distance 0:', listing.title, 'lat:', listingLat, 'lng:', listingLng);
+                    }
                 } else {
                     listing._distance = 999999; // No coordinates
                 }
             });
+            console.log(`📊 Total listings with distance 0: ${zeroDistanceCount}`);
 
             // Add marker
             mapMarker = L.marker([lat, lng]).addTo(map);
@@ -1555,6 +1581,14 @@
 
             // Apply filters
             applyFilters();
+            
+            // Scroll to first listing (the one with distance 0) after rendering
+            setTimeout(() => {
+                const listingsContainer = document.getElementById('listings-container');
+                if (listingsContainer && listingsContainer.children.length > 0) {
+                    listingsContainer.children[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 300);
         }
 
         function clearLocationFilter() {
@@ -1622,6 +1656,14 @@
 
         // Calculate distance between two points using Haversine formula
         function calculateDistance(lat1, lon1, lat2, lon2) {
+            // If coordinates are exactly the same or very close, return 0
+            const latDiff = Math.abs(lat1 - lat2);
+            const lonDiff = Math.abs(lon1 - lon2);
+            
+            if (latDiff < 0.00001 && lonDiff < 0.00001) {
+                return 0;
+            }
+            
             const R = 6371; // Earth's radius in km
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -2142,7 +2184,8 @@
 
                 // Location filter (radius-based) - use cached distance
                 let locationResult = true;
-                if (selectedLocation && listing._distance !== undefined) {
+                const radiusFilterEnabled = document.getElementById('radius-filter-enabled')?.checked || false;
+                if (selectedLocation && listing._distance !== undefined && radiusFilterEnabled) {
                     locationResult = (listing._distance <= selectedRadius);
                 }
 
@@ -2234,13 +2277,53 @@
                     case 'distance_asc':
                         // Sort by pre-calculated distance (cached in _distance property)
                         if (!selectedLocation) return 0;
-                        return (a._distance || 999999) - (b._distance || 999999);
+                        // Use ?? instead of || to properly handle 0 distance
+                        const distA = a._distance ?? 999999;
+                        const distB = b._distance ?? 999999;
+                        return distA - distB;
                     case 'date_desc':
                         return new Date(b.date || 0) - new Date(a.date || 0);
                     default:
                         return 0;
                 }
             });
+
+            // Debug: Check first 5 listings after sort
+            if (sortBy === 'distance_asc' && selectedLocation) {
+                console.log('🎯 First 5 listings after distance sort:');
+                filteredListings.slice(0, 5).forEach((listing, i) => {
+                    console.log(`  ${i+1}. ${listing.title} - Distance: ${listing._distance?.toFixed(2) || 'N/A'} km`);
+                });
+                
+                // Check if listing with distance 0 is in filtered list
+                const zeroDistListing = filteredListings.find(l => l._distance === 0);
+                if (zeroDistListing) {
+                    console.log('✅ Listing with distance 0 IS in filtered list:', zeroDistListing.title);
+                    console.log('   Its _distance value:', zeroDistListing._distance);
+                    console.log('   Expected position: 1st');
+                    const actualPosition = filteredListings.indexOf(zeroDistListing) + 1;
+                    console.log('   Actual position after sort:', actualPosition);
+                    
+                    // Check the listings around it
+                    if (actualPosition > 1) {
+                        console.log('   ⚠️ NOT in first position! Listings before it:');
+                        filteredListings.slice(0, Math.min(3, actualPosition - 1)).forEach((l, i) => {
+                            console.log(`      ${i+1}. ${l.title} - _distance: ${l._distance} (type: ${typeof l._distance})`);
+                        });
+                    }
+                } else {
+                    console.log('❌ Listing with distance 0 was FILTERED OUT!');
+                    // Find it in allListings
+                    const inAll = allListings.find(l => l._distance === 0);
+                    if (inAll) {
+                        console.log('   Found in allListings:', inAll.title);
+                        console.log('   Checking why it was filtered:');
+                        console.log('   - immediately_available:', inAll.immediately_available);
+                        console.log('   - lease_term:', inAll.lease_term);
+                        console.log('   - city:', inAll.city);
+                    }
+                }
+            }
 
             displayListings();
         }
@@ -2283,6 +2366,10 @@
                         <div class="listing-title">${listing.title || 'Rental Available'}</div>
                         <div class="listing-address">
                             📍 ${listing.address || listing.community || 'Address not specified'}, ${listing.community || ''}
+                            ${selectedLocation && listing._distance !== undefined && listing._distance < 999999 ? 
+                                `<span style="margin-left: 10px; padding: 2px 8px; background: #e0f2fe; color: #0369a1; border-radius: 12px; font-size: 0.85em; font-weight: 600;">
+                                    📏 ${listing._distance.toFixed(2)} km
+                                </span>` : ''}
                         </div>
                         <div class="listing-specs">
                             ${listing.beds !== null ? `<span class="spec"><span class="spec-icon">🛏️</span> ${listing.beds || 'Bachelor'} bed</span>` : ''}
@@ -2316,7 +2403,7 @@
                         <div class="price-main">$${listing.price_avg ? Math.round(listing.price_avg).toLocaleString() : listing.price || 'Call'}</div>
                         <div class="price-detail">per month</div>
                         ${listing.latitude && listing.longitude ? `
-                        <button class="view-btn" style="background: #00a389; margin-bottom: 8px; border: none; cursor: pointer; width: 100%;" onclick="setLocationMarker(${listing.latitude}, ${listing.longitude}); map.setView([${listing.latitude}, ${listing.longitude}], 15); document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });">
+                        <button class="view-btn" style="background: #00a389; margin-bottom: 8px; border: none; cursor: pointer; width: 100%;" onclick="setLocationMarker(parseFloat(${listing.latitude}), parseFloat(${listing.longitude})); map.setView([parseFloat(${listing.latitude}), parseFloat(${listing.longitude})], 15); document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });">
                             🎯 Point of Interest
                         </button>
                         ` : ''}
