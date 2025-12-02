@@ -60,6 +60,10 @@
 
         /* Responsive layout for mobile */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .main-layout {
                 grid-template-columns: 1fr;
             }
@@ -69,6 +73,31 @@
                 top: 0;
                 max-height: none;
                 margin-bottom: 20px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .subtitle {
+                font-size: 0.95em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.5em;
             }
         }
 
@@ -572,6 +601,56 @@
 
             .filter-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                padding: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .filter-section {
+                padding: 15px;
+            }
+            
+            .operator-toggle {
+                flex-wrap: wrap;
+            }
+            
+            .checkbox-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .listing-image {
+                height: 200px;
+            }
+            
+            .filter-input-wrapper {
+                flex-direction: column;
+            }
+            
+            .clear-filter-btn {
+                width: 100%;
+                margin-top: 5px;
             }
         }
 
