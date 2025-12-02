@@ -856,9 +856,9 @@
                     <label>
                         Price Range
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
-                            <input type="radio" id="price-and" name="price-operator" value="AND" checked>
+                            <input type="radio" id="price-and" name="price-operator" value="AND">
                             <label for="price-and">AND</label>
-                            <input type="radio" id="price-or" name="price-operator" value="OR">
+                            <input type="radio" id="price-or" name="price-operator" value="OR" checked>
                             <label for="price-or">OR</label>
                         </div>
                     </label>
@@ -882,9 +882,9 @@
                     <label>
                         Bedrooms
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
-                            <input type="radio" id="beds-and" name="beds-operator" value="AND" checked>
+                            <input type="radio" id="beds-and" name="beds-operator" value="AND">
                             <label for="beds-and">AND</label>
-                            <input type="radio" id="beds-or" name="beds-operator" value="OR">
+                            <input type="radio" id="beds-or" name="beds-operator" value="OR" checked>
                             <label for="beds-or">OR</label>
                         </div>
                     </label>
@@ -905,9 +905,9 @@
                     <label>
                         Size (sq ft)
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
-                            <input type="radio" id="size-and" name="size-operator" value="AND" checked>
+                            <input type="radio" id="size-and" name="size-operator" value="AND">
                             <label for="size-and">AND</label>
-                            <input type="radio" id="size-or" name="size-operator" value="OR">
+                            <input type="radio" id="size-or" name="size-operator" value="OR" checked>
                             <label for="size-or">OR</label>
                         </div>
                     </label>
@@ -960,9 +960,9 @@
                     <label>
                         Estacionamento
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
-                            <input type="radio" id="parking-and" name="parking-operator" value="AND" checked>
+                            <input type="radio" id="parking-and" name="parking-operator" value="AND">
                             <label for="parking-and">AND</label>
-                            <input type="radio" id="parking-or" name="parking-operator" value="OR">
+                            <input type="radio" id="parking-or" name="parking-operator" value="OR" checked>
                             <label for="parking-or">OR</label>
                         </div>
                     </label>
@@ -994,9 +994,9 @@
                     <label>
                         Carpete (Carpet)
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
-                            <input type="radio" id="carpet-and" name="carpet-operator" value="AND" checked>
+                            <input type="radio" id="carpet-and" name="carpet-operator" value="AND">
                             <label for="carpet-and">AND</label>
-                            <input type="radio" id="carpet-or" name="carpet-operator" value="OR">
+                            <input type="radio" id="carpet-or" name="carpet-operator" value="OR" checked>
                             <label for="carpet-or">OR</label>
                         </div>
                     </label>
@@ -1015,9 +1015,9 @@
                     <label>
                         Tipo de Propriedade
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
-                            <input type="radio" id="unittype-and" name="unittype-operator" value="AND" checked>
+                            <input type="radio" id="unittype-and" name="unittype-operator" value="AND">
                             <label for="unittype-and">AND</label>
-                            <input type="radio" id="unittype-or" name="unittype-operator" value="OR">
+                            <input type="radio" id="unittype-or" name="unittype-operator" value="OR" checked>
                             <label for="unittype-or">OR</label>
                         </div>
                     </label>
@@ -1354,6 +1354,8 @@
             document.getElementById('amenities-or').addEventListener('change', applyFilters);
             document.getElementById('unittype-and').addEventListener('change', applyFilters);
             document.getElementById('unittype-or').addEventListener('change', applyFilters);
+            document.getElementById('carpet-and').addEventListener('change', applyFilters);
+            document.getElementById('carpet-or').addEventListener('change', applyFilters);
             
             document.getElementById('sort-by').addEventListener('change', applyFilters);
         }
@@ -1836,15 +1838,15 @@
             
             // Get operators for each individual filter
             const cityOp = document.querySelector('input[name="city-operator"]:checked')?.value || 'AND';
-            const priceOp = document.querySelector('input[name="price-operator"]:checked')?.value || 'AND';
-            const bedsOp = document.querySelector('input[name="beds-operator"]:checked')?.value || 'AND';
-            const sizeOp = document.querySelector('input[name="size-operator"]:checked')?.value || 'AND';
+            const priceOp = document.querySelector('input[name="price-operator"]:checked')?.value || 'OR';
+            const bedsOp = document.querySelector('input[name="beds-operator"]:checked')?.value || 'OR';
+            const sizeOp = document.querySelector('input[name="size-operator"]:checked')?.value || 'OR';
             const communityOp = document.querySelector('input[name="community-operator"]:checked')?.value || 'AND';
-            const parkingOp = document.querySelector('input[name="parking-operator"]:checked')?.value || 'AND';
-            const unitTypeOp = document.querySelector('input[name="unittype-operator"]:checked')?.value || 'AND';
+            const parkingOp = document.querySelector('input[name="parking-operator"]:checked')?.value || 'OR';
+            const unitTypeOp = document.querySelector('input[name="unittype-operator"]:checked')?.value || 'OR';
             const utilitiesOp = document.querySelector('input[name="utilities-operator"]:checked')?.value || 'AND';
             const amenitiesOp = document.querySelector('input[name="amenities-operator"]:checked')?.value || 'AND';
-            const carpetOp = document.querySelector('input[name="carpet-operator"]:checked')?.value || 'AND';
+            const carpetOp = document.querySelector('input[name="carpet-operator"]:checked')?.value || 'OR';
 
             filteredListings = allListings.filter(listing => {
                 // Search filter - searches in title
@@ -2070,9 +2072,19 @@
                     const hasFeatures = l.features && Array.isArray(l.features) && l.features.length > 0;
                     return !hasFeatures;
                 }).length;
+                
+                // Test AND/OR logic
+                let logicExplanation = '';
+                if (carpetOp === 'AND') {
+                    logicExplanation = `AND logic: All ${carpetOptions.length} conditions must be TRUE (only listings matching ALL selected options)`;
+                } else {
+                    logicExplanation = `OR logic: Any of ${carpetOptions.length} conditions can be TRUE (listings matching ANY selected option)`;
+                }
+                
                 console.log('🔍 CARPET DEBUG:', {
                     selected: carpetOptions,
                     operator: carpetOp,
+                    logic: logicExplanation,
                     'COM carpete (explicit)': withCarpet,
                     'SEM carpete (explicit)': withoutCarpet,
                     'NÃO mencionado (no features)': notMentioned,
@@ -2183,7 +2195,8 @@
                             ${listing.immediately_available === 'Yes' ? '<span class="tag tag-immediate">✓ Available Now</span>' : ''}
                             ${listing.pet_friendly ? '<span class="tag tag-pet">🐾 Pet Friendly</span>' : ''}
                             ${listing.cost_per_sqft && listing.cost_per_sqft < 1.5 ? '<span class="tag tag-value">⭐ Best Value</span>' : ''}
-                            ${listing.furnished && listing.furnished.toLowerCase() === 'yes' ? '<span class="tag" style="background: #fce7f3; color: #be185d;">🛋️ Furnished</span>' : ''}
+                            ${listing.furnished && listing.furnished === 'Furnished' ? '<span class="tag" style="background: #fce7f3; color: #be185d;">🛋️ Furnished</span>' : ''}
+                            ${listing.furnished && listing.furnished === 'Unfurnished' ? '<span class="tag" style="background: #f3f4f6; color: #6b7280;">📦 Unfurnished</span>' : ''}
                             ${listing.lease_term ? `<span class="tag" style="background: #e0f2fe; color: #0369a1;">📅 ${listing.lease_term}</span>` : ''}
                         </div>
                         ${listing.utilities_included && listing.utilities_included.length > 0 ? `
@@ -2295,10 +2308,10 @@
             document.getElementById('filter-beds').selectedIndex = -1;
             document.getElementById('filter-size').selectedIndex = -1;
             document.getElementById('filter-community').selectedIndex = -1;
-            // Reset individual operators to AND (default)
-            document.getElementById('price-and').checked = true;
-            document.getElementById('beds-and').checked = true;
-            document.getElementById('size-and').checked = true;
+            // Reset individual operators to default
+            document.getElementById('price-or').checked = true; // OR is default
+            document.getElementById('beds-or').checked = true; // OR is default
+            document.getElementById('size-or').checked = true; // OR is default
             document.getElementById('community-and').checked = true;
             showClearFeedback('Filtros Básicos limpos');
             applyFilters();
@@ -2310,9 +2323,9 @@
             document.getElementById('filter-unit-type').selectedIndex = -1;
             document.getElementById('filter-utilities').selectedIndex = -1;
             document.getElementById('filter-amenities').selectedIndex = -1;
-            // Reset individual operators to AND (default)
-            document.getElementById('parking-and').checked = true;
-            document.getElementById('unittype-and').checked = true;
+            // Reset individual operators to default
+            document.getElementById('parking-or').checked = true; // OR is default
+            document.getElementById('unittype-or').checked = true; // OR is default
             document.getElementById('utilities-and').checked = true;
             document.getElementById('amenities-and').checked = true;
             showClearFeedback('Características da Propriedade limpas');
@@ -2353,17 +2366,17 @@
             // Reset sort
             document.getElementById('sort-by').value = 'cost_asc';
             
-            // Reset all individual operators to AND (default)
+            // Reset all individual operators to default
             document.getElementById('city-and').checked = true;
-            document.getElementById('price-and').checked = true;
-            document.getElementById('beds-and').checked = true;
-            document.getElementById('size-and').checked = true;
+            document.getElementById('price-or').checked = true; // OR is default
+            document.getElementById('beds-or').checked = true; // OR is default
+            document.getElementById('size-or').checked = true; // OR is default
             document.getElementById('community-and').checked = true;
-            document.getElementById('parking-and').checked = true;
-            document.getElementById('unittype-and').checked = true;
+            document.getElementById('parking-or').checked = true; // OR is default
+            document.getElementById('unittype-or').checked = true; // OR is default
             document.getElementById('utilities-and').checked = true;
             document.getElementById('amenities-and').checked = true;
-            document.getElementById('carpet-and').checked = true;
+            document.getElementById('carpet-or').checked = true; // OR is default
             
             // Clear location filter
             clearLocationFilter();
@@ -2584,24 +2597,24 @@
             Array.from(priceSelect.options).forEach(option => {
                 option.selected = state.price.includes(option.value);
             });
-            if (state.priceOperator === 'OR') document.getElementById('price-or').checked = true;
-            else document.getElementById('price-and').checked = true;
+            if (state.priceOperator === 'AND') document.getElementById('price-and').checked = true;
+            else document.getElementById('price-or').checked = true; // OR is default
             
             // Beds
             const bedsSelect = document.getElementById('filter-beds');
             Array.from(bedsSelect.options).forEach(option => {
                 option.selected = state.beds.includes(option.value);
             });
-            if (state.bedsOperator === 'OR') document.getElementById('beds-or').checked = true;
-            else document.getElementById('beds-and').checked = true;
+            if (state.bedsOperator === 'AND') document.getElementById('beds-and').checked = true;
+            else document.getElementById('beds-or').checked = true; // OR is default
             
             // Size
             const sizeSelect = document.getElementById('filter-size');
             Array.from(sizeSelect.options).forEach(option => {
                 option.selected = state.size.includes(option.value);
             });
-            if (state.sizeOperator === 'OR') document.getElementById('size-or').checked = true;
-            else document.getElementById('size-and').checked = true;
+            if (state.sizeOperator === 'AND') document.getElementById('size-and').checked = true;
+            else document.getElementById('size-or').checked = true; // OR is default
             
             // Community
             const communitySelect = document.getElementById('filter-community');
@@ -2616,8 +2629,8 @@
             Array.from(parkingSelect.options).forEach(option => {
                 option.selected = state.parking.includes(option.value);
             });
-            if (state.parkingOperator === 'OR') document.getElementById('parking-or').checked = true;
-            else document.getElementById('parking-and').checked = true;
+            if (state.parkingOperator === 'AND') document.getElementById('parking-and').checked = true;
+            else document.getElementById('parking-or').checked = true; // OR is default
             
             // Furnished
             document.getElementById('filter-furnished').value = state.furnished || '';
@@ -2627,16 +2640,16 @@
             Array.from(carpetSelect.options).forEach(option => {
                 option.selected = state.carpet && state.carpet.includes(option.value);
             });
-            if (state.carpetOperator === 'OR') document.getElementById('carpet-or').checked = true;
-            else document.getElementById('carpet-and').checked = true;
+            if (state.carpetOperator === 'AND') document.getElementById('carpet-and').checked = true;
+            else document.getElementById('carpet-or').checked = true; // OR is default
             
             // Unit Type
             const unitTypeSelect = document.getElementById('filter-unit-type');
             Array.from(unitTypeSelect.options).forEach(option => {
                 option.selected = state.unitType.includes(option.value);
             });
-            if (state.unitTypeOperator === 'OR') document.getElementById('unittype-or').checked = true;
-            else document.getElementById('unittype-and').checked = true;
+            if (state.unitTypeOperator === 'AND') document.getElementById('unittype-and').checked = true;
+            else document.getElementById('unittype-or').checked = true;
             
             // Utilities
             const utilitiesSelect = document.getElementById('filter-utilities');
