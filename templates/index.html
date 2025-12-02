@@ -1087,6 +1087,10 @@
                         <input type="checkbox" id="filter-value">
                         Best Value (&lt;$1.50/sq ft)
                     </label>
+                    <label>
+                        <input type="checkbox" id="filter-long-term" checked>
+                        Long Term Lease
+                    </label>
                 </div>
             </div>
 
@@ -1595,6 +1599,7 @@
             const immediate = document.getElementById('filter-immediate').checked;
             const pets = document.getElementById('filter-pets').checked;
             const value = document.getElementById('filter-value').checked;
+            const longTerm = document.getElementById('filter-long-term').checked;
             const furnished = document.getElementById('filter-furnished').value;
             
             // Test each filter
@@ -1802,6 +1807,7 @@
             const immediate = document.getElementById('filter-immediate').checked;
             const pets = document.getElementById('filter-pets').checked;
             const value = document.getElementById('filter-value').checked;
+            const longTerm = document.getElementById('filter-long-term').checked;
             const furnished = document.getElementById('filter-furnished').value;
             const sortBy = document.getElementById('sort-by').value;
             
@@ -1978,6 +1984,9 @@
                 if (value) {
                     quickResult = (quickResult && (listing.cost_per_sqft && listing.cost_per_sqft <= 1.5));
                 }
+                if (longTerm) {
+                    quickResult = (quickResult && (listing.lease_term && listing.lease_term.toLowerCase().includes('long term')));
+                }
 
                 // Location filter (radius-based) - use cached distance
                 let locationResult = true;
@@ -2011,6 +2020,7 @@
                 immediate: immediate,
                 pets: pets,
                 value: value,
+                longTerm: longTerm,
                 location: selectedLocation ? `Radius: ${selectedRadius}km` : 'none'
             });
             console.log('Sort by:', sortBy);
@@ -2098,6 +2108,7 @@
                             ${listing.pet_friendly ? '<span class="tag tag-pet">🐾 Pet Friendly</span>' : ''}
                             ${listing.cost_per_sqft && listing.cost_per_sqft < 1.5 ? '<span class="tag tag-value">⭐ Best Value</span>' : ''}
                             ${listing.furnished && listing.furnished.toLowerCase() === 'yes' ? '<span class="tag" style="background: #fce7f3; color: #be185d;">🛋️ Furnished</span>' : ''}
+                            ${listing.lease_term ? `<span class="tag" style="background: #e0f2fe; color: #0369a1;">📅 ${listing.lease_term}</span>` : ''}
                         </div>
                         ${listing.utilities_included && listing.utilities_included.length > 0 ? `
                         <div style="margin-top: 8px; font-size: 0.85em; color: #666;">
@@ -2235,6 +2246,7 @@
             document.getElementById('filter-immediate').checked = false;
             document.getElementById('filter-pets').checked = false;
             document.getElementById('filter-value').checked = false;
+            document.getElementById('filter-long-term').checked = false;
             showClearFeedback('Filtros Rápidos limpos');
             applyFilters();
         }
@@ -2311,8 +2323,9 @@
             const immediate = document.getElementById('filter-immediate').checked ? 1 : 0;
             const pets = document.getElementById('filter-pets').checked ? 1 : 0;
             const value = document.getElementById('filter-value').checked ? 1 : 0;
+            const longTerm = document.getElementById('filter-long-term').checked ? 1 : 0;
             
-            const totalFilters = priceOptions + bedsOptions + sizeOptions + communityOptions + parkingOptions + utilitiesOptions + amenitiesOptions + furnished + immediate + pets + value;
+            const totalFilters = priceOptions + bedsOptions + sizeOptions + communityOptions + parkingOptions + utilitiesOptions + amenitiesOptions + furnished + immediate + pets + value + longTerm;
             const badge = document.getElementById('active-filters-badge');
             
             if (totalFilters > 0) {
@@ -2466,7 +2479,8 @@
                 // Quick filters
                 immediate: document.getElementById('filter-immediate').checked,
                 pets: document.getElementById('filter-pets').checked,
-                value: document.getElementById('filter-value').checked
+                value: document.getElementById('filter-value').checked,
+                longTerm: document.getElementById('filter-long-term').checked
             };
         }
 
@@ -2554,6 +2568,7 @@
             document.getElementById('filter-immediate').checked = state.immediate || false;
             document.getElementById('filter-pets').checked = state.pets || false;
             document.getElementById('filter-value').checked = state.value || false;
+            document.getElementById('filter-long-term').checked = state.longTerm !== undefined ? state.longTerm : false;
             
             // Apply filters
             applyFilters();
