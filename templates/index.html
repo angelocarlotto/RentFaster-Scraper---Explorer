@@ -992,6 +992,27 @@
 
                 <div class="filter-group">
                     <label>
+                        Carpete (Carpet)
+                        <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
+                            <input type="radio" id="carpet-and" name="carpet-operator" value="AND" checked>
+                            <label for="carpet-and">AND</label>
+                            <input type="radio" id="carpet-or" name="carpet-operator" value="OR">
+                            <label for="carpet-or">OR</label>
+                        </div>
+                    </label>
+                    <div class="filter-input-wrapper">
+                        <select id="filter-carpet" multiple style="flex: 1;">
+                            <option value="with">✓ Com Carpete (explicitamente tem)</option>
+                            <option value="without">✗ Sem Carpete (explicitamente não tem)</option>
+                            <option value="not-mentioned">? Não Mencionado (sem info)</option>
+                        </select>
+                        <button class="clear-filter-btn" onclick="clearIndividualFilter('filter-carpet')" title="Limpar carpete">✕</button>
+                    </div>
+                    <div class="multi-select-info">Ctrl/Cmd + clique para selecionar vários</div>
+                </div>
+
+                <div class="filter-group">
+                    <label>
                         Tipo de Propriedade
                         <div class="operator-toggle" style="display: inline-flex; margin-left: 10px;">
                             <input type="radio" id="unittype-and" name="unittype-operator" value="AND" checked>
@@ -1304,6 +1325,7 @@
             document.getElementById('filter-community').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-parking').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-furnished').addEventListener('change', applyFiltersDebounced);
+            document.getElementById('filter-carpet').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-unit-type').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-utilities').addEventListener('change', applyFiltersDebounced);
             document.getElementById('filter-amenities').addEventListener('change', applyFiltersDebounced);
@@ -1803,6 +1825,7 @@
             const unitTypeOptions = Array.from(document.getElementById('filter-unit-type').selectedOptions).map(o => o.value);
             const utilitiesOptions = Array.from(document.getElementById('filter-utilities').selectedOptions).map(o => o.value);
             const amenitiesOptions = Array.from(document.getElementById('filter-amenities').selectedOptions).map(o => o.value);
+            const carpetOptions = Array.from(document.getElementById('filter-carpet').selectedOptions).map(o => o.value);
             
             const immediate = document.getElementById('filter-immediate').checked;
             const pets = document.getElementById('filter-pets').checked;
@@ -1821,6 +1844,7 @@
             const unitTypeOp = document.querySelector('input[name="unittype-operator"]:checked')?.value || 'AND';
             const utilitiesOp = document.querySelector('input[name="utilities-operator"]:checked')?.value || 'AND';
             const amenitiesOp = document.querySelector('input[name="amenities-operator"]:checked')?.value || 'AND';
+            const carpetOp = document.querySelector('input[name="carpet-operator"]:checked')?.value || 'AND';
 
             filteredListings = allListings.filter(listing => {
                 // Search filter - searches in title
@@ -1925,6 +1949,31 @@
                     }
                 }
 
+                // Carpet filter (multi-select with individual operator)
+                let carpetResult = true;
+                if (carpetOptions.length > 0) {
+                    const hasFeatures = listing.features && Array.isArray(listing.features) && listing.features.length > 0;
+                    const hasCarpet = hasFeatures && listing.features.includes('Carpeted Floors');
+                    
+                    const carpetMatches = carpetOptions.map(option => {
+                        if (option === 'with') {
+                            // Explicitly has "Carpeted Floors" in features array
+                            return hasCarpet === true;
+                        } else if (option === 'without') {
+                            // Has features array but does NOT include "Carpeted Floors"
+                            return hasFeatures && !hasCarpet;
+                        } else if (option === 'not-mentioned') {
+                            // No features array or empty features array (carpet not mentioned at all)
+                            return !hasFeatures;
+                        }
+                        return false;
+                    });
+                    
+                    carpetResult = (carpetOp === 'AND')
+                        ? carpetMatches.every(match => match)
+                        : carpetMatches.some(match => match);
+                }
+
                 // Unit Type filter (with individual operator)
                 let unitTypeResult = true;
                 if (unitTypeOptions.length > 0) {
@@ -1997,7 +2046,7 @@
                 // ALL filters must pass (AND between all filters)
                 // Enclosing each filter result in parentheses for clarity (though not strictly necessary here)
                 return (searchResult) && (cityResult) && (priceResult) && (bedsResult) && (sizeResult) && (communityResult) && 
-                       (parkingResult) && (furnishedResult) && (unitTypeResult) && (utilitiesResult) && 
+                       (parkingResult) && (furnishedResult) && (carpetResult) && (unitTypeResult) && (utilitiesResult) && 
                        (amenitiesResult) && (quickResult) && (locationResult);
             });
 
@@ -2005,6 +2054,32 @@
             console.group('🔍 Filter Results');
             console.log('Total listings:', allListings.length);
             console.log('Filtered listings:', filteredListings.length);
+            
+            // Debug carpet filter
+            if (carpetOptions.length > 0) {
+                const withCarpet = filteredListings.filter(l => {
+                    const hasFeatures = l.features && Array.isArray(l.features) && l.features.length > 0;
+                    return hasFeatures && l.features.includes('Carpeted Floors');
+                }).length;
+                const withoutCarpet = filteredListings.filter(l => {
+                    const hasFeatures = l.features && Array.isArray(l.features) && l.features.length > 0;
+                    const hasCarpet = hasFeatures && l.features.includes('Carpeted Floors');
+                    return hasFeatures && !hasCarpet;
+                }).length;
+                const notMentioned = filteredListings.filter(l => {
+                    const hasFeatures = l.features && Array.isArray(l.features) && l.features.length > 0;
+                    return !hasFeatures;
+                }).length;
+                console.log('🔍 CARPET DEBUG:', {
+                    selected: carpetOptions,
+                    operator: carpetOp,
+                    'COM carpete (explicit)': withCarpet,
+                    'SEM carpete (explicit)': withoutCarpet,
+                    'NÃO mencionado (no features)': notMentioned,
+                    total: withCarpet + withoutCarpet + notMentioned
+                });
+            }
+            
             console.log('Active filters:', {
                 search: searchText || 'none',
                 city: cityOptions.length > 0 ? cityOptions : 'none',
@@ -2014,6 +2089,7 @@
                 community: communityOptions.length > 0 ? communityOptions : 'none',
                 parking: parkingOptions.length > 0 ? parkingOptions : 'none',
                 furnished: furnished || 'none',
+                carpet: carpetOptions.length > 0 ? carpetOptions : 'none',
                 unitType: unitTypeOptions.length > 0 ? unitTypeOptions : 'none',
                 utilities: utilitiesOptions.length > 0 ? utilitiesOptions : 'none',
                 amenities: amenitiesOptions.length > 0 ? amenitiesOptions : 'none',
@@ -2190,6 +2266,7 @@
                 'filter-community': 'Comunidade',
                 'filter-parking': 'Estacionamento',
                 'filter-furnished': 'Mobiliado',
+                'filter-carpet': 'Carpete',
                 'filter-unit-type': 'Tipo de Propriedade',
                 'filter-utilities': 'Utilidades',
                 'filter-amenities': 'Comodidades'
@@ -2268,6 +2345,7 @@
             
             // Clear single selects and checkboxes
             document.getElementById('filter-furnished').value = '';
+            document.getElementById('filter-carpet').selectedIndex = -1;
             document.getElementById('filter-immediate').checked = false;
             document.getElementById('filter-pets').checked = false;
             document.getElementById('filter-value').checked = false;
@@ -2285,6 +2363,7 @@
             document.getElementById('unittype-and').checked = true;
             document.getElementById('utilities-and').checked = true;
             document.getElementById('amenities-and').checked = true;
+            document.getElementById('carpet-and').checked = true;
             
             // Clear location filter
             clearLocationFilter();
@@ -2319,13 +2398,14 @@
             const parkingOptions = document.getElementById('filter-parking').selectedOptions.length;
             const utilitiesOptions = document.getElementById('filter-utilities').selectedOptions.length;
             const amenitiesOptions = document.getElementById('filter-amenities').selectedOptions.length;
+            const carpetOptions = document.getElementById('filter-carpet').selectedOptions.length;
             const furnished = document.getElementById('filter-furnished').value ? 1 : 0;
             const immediate = document.getElementById('filter-immediate').checked ? 1 : 0;
             const pets = document.getElementById('filter-pets').checked ? 1 : 0;
             const value = document.getElementById('filter-value').checked ? 1 : 0;
             const longTerm = document.getElementById('filter-long-term').checked ? 1 : 0;
             
-            const totalFilters = priceOptions + bedsOptions + sizeOptions + communityOptions + parkingOptions + utilitiesOptions + amenitiesOptions + furnished + immediate + pets + value + longTerm;
+            const totalFilters = priceOptions + bedsOptions + sizeOptions + communityOptions + parkingOptions + utilitiesOptions + amenitiesOptions + carpetOptions + furnished + immediate + pets + value + longTerm;
             const badge = document.getElementById('active-filters-badge');
             
             if (totalFilters > 0) {
@@ -2469,6 +2549,8 @@
                 parking: Array.from(document.getElementById('filter-parking').selectedOptions).map(o => o.value),
                 parkingOperator: document.querySelector('input[name="parking-operator"]:checked').value,
                 furnished: document.getElementById('filter-furnished').value,
+                carpet: Array.from(document.getElementById('filter-carpet').selectedOptions).map(o => o.value),
+                carpetOperator: document.querySelector('input[name="carpet-operator"]:checked').value,
                 unitType: Array.from(document.getElementById('filter-unit-type').selectedOptions).map(o => o.value),
                 unitTypeOperator: document.querySelector('input[name="unittype-operator"]:checked').value,
                 utilities: Array.from(document.getElementById('filter-utilities').selectedOptions).map(o => o.value),
@@ -2539,6 +2621,14 @@
             
             // Furnished
             document.getElementById('filter-furnished').value = state.furnished || '';
+            
+            // Carpet
+            const carpetSelect = document.getElementById('filter-carpet');
+            Array.from(carpetSelect.options).forEach(option => {
+                option.selected = state.carpet && state.carpet.includes(option.value);
+            });
+            if (state.carpetOperator === 'OR') document.getElementById('carpet-or').checked = true;
+            else document.getElementById('carpet-and').checked = true;
             
             // Unit Type
             const unitTypeSelect = document.getElementById('filter-unit-type');
