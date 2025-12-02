@@ -1056,7 +1056,10 @@
                             <option value="available">Com Estacionamento</option>
                             <option value="none">Sem Estacionamento</option>
                             <option value="1">1 Vaga</option>
-                            <option value="2">2+ Vagas</option>
+                            <option value="2">2 Vagas</option>
+                            <option value="3">3 Vagas</option>
+                            <option value="4">4 Vagas</option>
+                            <option value="5+">5+ Vagas</option>
                         </select>
                         <button class="clear-filter-btn" onclick="clearIndividualFilter('filter-parking')" title="Limpar estacionamento">✕</button>
                     </div>
@@ -2031,7 +2034,13 @@
                         } else if (option === '1') {
                             return (parkingSpots === 1);
                         } else if (option === '2') {
-                            return (parkingSpots >= 2);
+                            return (parkingSpots === 2);
+                        } else if (option === '3') {
+                            return (parkingSpots === 3);
+                        } else if (option === '4') {
+                            return (parkingSpots === 4);
+                        } else if (option === '5+') {
+                            return (parkingSpots >= 5);
                         }
                         return false;
                     });
