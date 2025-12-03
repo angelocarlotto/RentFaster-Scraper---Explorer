@@ -1,0 +1,182 @@
+[
+  [
+    {
+      "ref_id": "581447_unit_1",
+      "parent_ref_id": "581447",
+      "url": "https://www.rentfaster.ca/properties/111-wolf-creek-drive-southeast-calgary-581447",
+      "building_address": "New Apartment Complex in Wolf Willow!",
+      "is_multi_unit": true,
+      "unit_type": "Utilities Included:",
+      "units_available": 1,
+      "beds": 2,
+      "baths": 2.0,
+      "sqft": 761,
+      "price": 1850,
+      "utilities_included": [
+        "Heat",
+        "Water",
+        "Electricity"
+      ],
+      "furnished": "Unfurnished",
+      "parking_spots": null,
+      "amenities": [],
+      "smoking_allowed": "Unknown",
+      "building_type": "Apartment",
+      "scraped_at": "2025-11-29T21:34:19.394135"
+    },
+    {
+      "ref_id": "581447_unit_2",
+      "parent_ref_id": "581447",
+      "url": "https://www.rentfaster.ca/properties/111-wolf-creek-drive-southeast-calgary-581447",
+      "building_address": "New Apartment Complex in Wolf Willow!",
+      "is_multi_unit": true,
+      "unit_type": "Utilities Included:",
+      "units_available": 1,
+      "beds": 2,
+      "baths": 1.0,
+      "sqft": 672,
+      "price": 1650,
+      "utilities_included": [
+        "Heat",
+        "Water",
+        "Electricity"
+      ],
+      "furnished": "Unfurnished",
+      "parking_spots": null,
+      "amenities": [],
+      "smoking_allowed": "Unknown",
+      "building_type": "Apartment",
+      "scraped_at": "2025-11-29T21:34:19.405555"
+    },
+    {
+      "ref_id": "581447_unit_3",
+      "parent_ref_id": "581447",
+      "url": "https://www.rentfaster.ca/properties/111-wolf-creek-drive-southeast-calgary-581447",
+      "building_address": "New Apartment Complex in Wolf Willow!",
+      "is_multi_unit": true,
+      "unit_type": "Utilities Included:",
+      "units_available": 1,
+      "beds": 3,
+      "baths": 2.0,
+      "sqft": 889,
+      "price": 2000,
+      "utilities_included": [
+        "Heat",
+        "Water",
+        "Electricity"
+      ],
+      "furnished": "Unfurnished",
+      "parking_spots": null,
+      "amenities": [],
+      "smoking_allowed": "Unknown",
+      "building_type": "Apartment",
+      "scraped_at": "2025-11-29T21:34:19.415697"
+    },
+    {
+      "ref_id": "581447_unit_4",
+      "parent_ref_id": "581447",
+      "url": "https://www.rentfaster.ca/properties/111-wolf-creek-drive-southeast-calgary-581447",
+      "building_address": "New Apartment Complex in Wolf Willow!",
+      "is_multi_unit": true,
+      "unit_type": "",
+      "units_available": 0,
+      "beds": 1,
+      "baths": null,
+      "sqft": null,
+      "price": null,
+      "utilities_included": [],
+      "furnished": "Unknown",
+      "parking_spots": null,
+      "amenities": [],
+      "smoking_allowed": "Unknown",
+      "building_type": "Apartment",
+      "scraped_at": "2025-11-29T21:34:19.425272"
+    }
+  ],
+  {
+    "ref_id": "589441",
+    "url": "https://www.rentfaster.ca/properties/423-tekarra-drive-northwest-calgary-589441",
+    "scraped_at": "2025-11-29T21:34:25.973373",
+    "is_multi_unit": false,
+    "beds": 3,
+    "parking_spots": null,
+    "furnished": "Unfurnished",
+    "utilities_included": [],
+    "amenities": [
+      "Laundry - In Suite",
+      "Fireplace",
+      "Window Coverings",
+      "Central Vac",
+      "Alarm",
+      "Hardwood Floors",
+      "Luxury Vinyl Plank Flooring",
+      "Fridge",
+      "Microwave",
+      "Oven/Stove",
+      "Dishwasher",
+      "Disposal",
+      "Patio/Deck"
+    ],
+    "smoking_allowed": null,
+    "building_type": "Duplex"
+  },
+  {
+    "ref_id": "659073",
+    "url": "https://www.rentfaster.ca/properties/4440-14-street-northwest-calgary-659073",
+    "scraped_at": "2025-11-29T21:34:32.569208",
+    "is_multi_unit": false,
+    "beds": 2,
+    "parking_spots": null,
+    "furnished": "Unfurnished",
+    "utilities_included": [
+      "Heat",
+      "Water"
+    ],
+    "amenities": [
+      "Corner Unit",
+      "Laundry - In Suite",
+      "Laundry Hookups",
+      "Penthouse Unit",
+      "Dishwasher",
+      "Oven/Stove",
+      "Microwave",
+      "Fridge",
+      "Air Conditioning",
+      "Fireplace",
+      "Window Coverings",
+      "Hardwood Floors",
+      "Carpeted Floors",
+      "Balcony",
+      "Patio/Deck",
+      "In-suite Storage",
+      "City views"
+    ],
+    "smoking_allowed": "No",
+    "building_type": "Condo"
+  },
+  {
+    "ref_id": "496011",
+    "url": "https://www.rentfaster.ca/properties/1727-54-street-se-calgary-496011",
+    "scraped_at": "2025-11-29T21:34:39.168808",
+    "is_multi_unit": false,
+    "beds": 2,
+    "parking_spots": null,
+    "furnished": "Unfurnished",
+    "utilities_included": [
+      "Heat",
+      "Water"
+    ],
+    "amenities": [
+      "Balcony",
+      "Dishwasher",
+      "Fridge",
+      "Laundry - In Suite",
+      "Microwave",
+      "Window Coverings",
+      "Elevator",
+      "Oven/Stove"
+    ],
+    "smoking_allowed": null,
+    "building_type": "Apartment"
+  }
+]
