@@ -3,46 +3,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: rentfaster_web
     ports:
       - "5001:5001"
-    volumes:
-      # Mount static files and templates only (scripts are in the image)
-      - ./static:/app/static:ro
-      - ./templates:/app/templates:ro
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
-      # MongoDB configuration
-      - MONGO_URI=mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true
-      - MONGO_DB=rentfaster
-      - MONGO_COLLECTION=listings_detailed
+      # MongoDB configuration (override these in Coolify environment variables)
+      - MONGO_URI=${MONGO_URI:-mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true}
+      - MONGO_DB=${MONGO_DB:-rentfaster}
+      - MONGO_COLLECTION=${MONGO_COLLECTION:-listings_detailed}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/', timeout=5)"]
+      test: ["CMD", "curl", "-f", "http://localhost:5001/", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    networks:
-      - rentfaster_network
-
-  # Optional: Scraper service (uncomment to run scrapers)
-  # scraper:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: rentfaster_scraper
-  #   volumes:
-  #     # Mount raw folder with city subdirectories
-  #     - ./raw:/app/raw
-  #     - ./rentfaster_detailed_offline.json:/app/rentfaster_detailed_offline.json
-  #   command: python scrape_offline_parallel.py 20
-  #   depends_on:
-  #     - web
-  #   networks:
-  #     - rentfaster_network
-
-networks:
-  rentfaster_network:
-    driver: bridge
