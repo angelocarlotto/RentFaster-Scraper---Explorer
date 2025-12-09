@@ -7,10 +7,9 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      # Mount static files and scripts (no data files needed - using MongoDB)
+      # Mount static files and templates only (scripts are in the image)
       - ./static:/app/static:ro
       - ./templates:/app/templates:ro
-      - ./scripts:/app/scripts:ro
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
