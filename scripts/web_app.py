@@ -5,13 +5,14 @@
 Flask web application to explore rental listings with interactive filters.
 Provides a user-friendly interface to browse and filter rental data.
 
-Reads: rentfaster_detailed_offline.json
+Reads: MongoDB database (rentfaster.listings_detailed)
 Serves: Web UI at http://localhost:5001
 """
 
 from flask import Flask, render_template, jsonify, send_from_directory
 import json
 import os
+from pymongo import MongoClient
 
 # Get the parent directory (project root)
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,13 +22,27 @@ app = Flask(__name__,
             template_folder=os.path.join(project_root, 'templates'),
             static_folder=os.path.join(project_root, 'static'))
 
-# Load data - use offline scraped data only
-data_dir = os.path.join(project_root, 'data')
-LISTINGS_JSON = os.path.join(data_dir, 'rentfaster_detailed_offline.json') if os.path.exists(os.path.join(data_dir, 'rentfaster_detailed_offline.json')) else os.path.join(data_dir, 'rentfaster_listings.json')
+# MongoDB Configuration
+MONGO_URI = "mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true"
+DB_NAME = "rentfaster"
+COLLECTION_NAME = "listings_detailed"
 
-# Cache for listings data with file modification time
-_listings_cache = None
-_cache_mtime = None
+# MongoDB client (lazy initialization)
+_mongo_client = None
+_mongo_db = None
+_mongo_collection = None
+
+def get_mongo_collection():
+    """Get or create MongoDB collection connection"""
+    global _mongo_client, _mongo_db, _mongo_collection
+    
+    if _mongo_collection is None:
+        _mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        _mongo_db = _mongo_client[DB_NAME]
+        _mongo_collection = _mongo_db[COLLECTION_NAME]
+        print(f"✓ Connected to MongoDB: {DB_NAME}.{COLLECTION_NAME}")
+    
+    return _mongo_collection
 
 @app.route('/')
 def index():
@@ -36,32 +51,23 @@ def index():
 
 @app.route('/api/listings')
 def get_listings():
-    """API endpoint to get all listings - auto-reloads when file changes"""
-    global _listings_cache, _cache_mtime
-    
+    """API endpoint to get all listings from MongoDB"""
     try:
-        # Check if file has been modified
-        current_mtime = os.path.getmtime(LISTINGS_JSON)
+        collection = get_mongo_collection()
         
-        # Reload if cache is empty or file has changed
-        if _listings_cache is None or _cache_mtime != current_mtime:
-            print(f"📥 Reloading data from {LISTINGS_JSON}")
-            with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:
-                listings = json.load(f)
-            
-            # Enrich with calculated fields
-            enriched = []
-            for listing in listings:
-                enriched_listing = enrich_listing(listing)
-                enriched.append(enriched_listing)
-            
-            _listings_cache = enriched
-            _cache_mtime = current_mtime
-            print(f"✓ Loaded {len(enriched):,} listings")
+        # Fetch all listings from MongoDB (exclude _id field for JSON serialization)
+        listings = list(collection.find({}, {'_id': 0}))
         
-        return jsonify(_listings_cache)
+        # Enrich with calculated fields
+        enriched = []
+        for listing in listings:
+            enriched_listing = enrich_listing(listing)
+            enriched.append(enriched_listing)
+        
+        print(f"✓ Fetched {len(enriched):,} listings from MongoDB")
+        return jsonify(enriched)
     except Exception as e:
-        print(f"Error loading listings: {e}")
+        print(f"Error loading listings from MongoDB: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -183,10 +189,10 @@ def send_static(path):
 
 @app.route('/api/stats')
 def get_stats():
-    """Get summary statistics"""
+    """Get summary statistics from MongoDB"""
     try:
-        with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:
-            listings = json.load(f)
+        collection = get_mongo_collection()
+        listings = list(collection.find({}, {'_id': 0}))
         
         enriched = [enrich_listing(l) for l in listings]
         
@@ -209,10 +215,10 @@ def get_stats():
 
 @app.route('/api/debug')
 def get_debug_info():
-    """Get debug/diagnostic information about the dataset"""
+    """Get debug/diagnostic information about the dataset from MongoDB"""
     try:
-        with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:
-            listings = json.load(f)
+        collection = get_mongo_collection()
+        listings = list(collection.find({}, {'_id': 0}))
         
         # Data quality metrics
         total = len(listings)
@@ -272,11 +278,17 @@ def get_debug_info():
         amenities_counts = [len(l.get('amenities', [])) for l in listings if l.get('amenities')]
         avg_amenities = round(sum(amenities_counts) / len(amenities_counts), 1) if amenities_counts else 0
         
+        # Get MongoDB stats
+        db_stats = _mongo_db.command('dbstats')
+        collection_stats = _mongo_db.command('collstats', COLLECTION_NAME)
+        
         debug_info = {
             'dataset': {
                 'total_entries': total,
-                'data_source': LISTINGS_JSON,
-                'file_size_mb': round(os.path.getsize(LISTINGS_JSON) / 1024 / 1024, 2)
+                'data_source': f'MongoDB: {DB_NAME}.{COLLECTION_NAME}',
+                'storage_size_mb': round(collection_stats.get('storageSize', 0) / 1024 / 1024, 2),
+                'total_indexes': collection_stats.get('nindexes', 0),
+                'avg_doc_size': collection_stats.get('avgObjSize', 0)
             },
             'completeness': {
                 'price': {'count': has_price, 'percent': round(has_price/total*100, 1)},
@@ -356,19 +368,30 @@ if __name__ == '__main__':
     print("=" * 80)
     print("🌐 RentFaster Web Explorer Starting...")
     print("=" * 80)
-    print(f"\n✓ Loading data from {LISTINGS_JSON}")
+    print(f"\n🔌 Connecting to MongoDB...")
+    print(f"   Database: {DB_NAME}")
+    print(f"   Collection: {COLLECTION_NAME}")
     
-    if not os.path.exists(LISTINGS_JSON):
-        print(f"\n❌ Error: {LISTINGS_JSON} not found!")
-        print("Please run the scraping workflow first:")
-        print("  1. download_raw_html_parallel.py - Download HTML files")
-        print("  2. scrape_offline_parallel.py - Parse offline data")
+    try:
+        # Test MongoDB connection
+        collection = get_mongo_collection()
+        listings_count = collection.count_documents({})
+        
+        print(f"\n✓ Connected to MongoDB successfully")
+        print(f"✓ Found {listings_count:,} listings")
+        
+        # Show index information
+        indexes = list(collection.list_indexes())
+        print(f"✓ Indexes: {len(indexes)} available")
+        
+    except Exception as e:
+        print(f"\n❌ Error: Could not connect to MongoDB!")
+        print(f"   {e}")
+        print("\nPlease ensure:")
+        print("  1. MongoDB is running at 10.0.0.123:27023")
+        print("  2. Import script has been run: python scripts/import_to_mongodb.py")
         exit(1)
     
-    with open(LISTINGS_JSON, 'r', encoding='utf-8') as f:
-        listings_count = len(json.load(f))
-    
-    print(f"✓ Loaded {listings_count:,} listings")
     print("\n" + "=" * 80)
     print("🚀 Starting web server...")
     print("=" * 80)
