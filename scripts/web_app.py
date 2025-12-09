@@ -22,10 +22,10 @@ app = Flask(__name__,
             template_folder=os.path.join(project_root, 'templates'),
             static_folder=os.path.join(project_root, 'static'))
 
-# MongoDB Configuration
-MONGO_URI = "mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true"
-DB_NAME = "rentfaster"
-COLLECTION_NAME = "listings_detailed"
+# MongoDB Configuration (read from environment variables or use defaults)
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true")
+DB_NAME = os.getenv("MONGO_DB", "rentfaster")
+COLLECTION_NAME = os.getenv("MONGO_COLLECTION", "listings_detailed")
 
 # MongoDB client (lazy initialization)
 _mongo_client = None

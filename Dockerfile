@@ -32,6 +32,11 @@ ENV FLASK_APP=scripts/web_app.py
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
 
+# MongoDB connection (can be overridden via docker-compose or runtime)
+ENV MONGO_URI=mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true
+ENV MONGO_DB=rentfaster
+ENV MONGO_COLLECTION=listings_detailed
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:5001/', timeout=5)" || exit 1

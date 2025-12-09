@@ -7,15 +7,17 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      # Mount data files as read-only
-      - ./data:/app/data:ro
-      # Mount static files
+      # Mount static files and scripts (no data files needed - using MongoDB)
       - ./static:/app/static:ro
       - ./templates:/app/templates:ro
       - ./scripts:/app/scripts:ro
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
+      # MongoDB configuration
+      - MONGO_URI=mongodb://root:fcHIctV8xDjncLMR0cwCzu6oDfHyhNqCPj2S@10.0.0.123:27023/?directConnection=true
+      - MONGO_DB=rentfaster
+      - MONGO_COLLECTION=listings_detailed
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/', timeout=5)"]

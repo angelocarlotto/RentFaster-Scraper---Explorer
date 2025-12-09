@@ -16,5 +16,9 @@ webdriver-manager==4.0.1
 # Data Processing
 python-dateutil==2.8.2
 
+# Database
+pymongo==4.15.5
+dnspython==2.8.0
+
 # Production WSGI Server (optional)
 gunicorn==21.2.0
