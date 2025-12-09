@@ -19,7 +19,7 @@ def deduplicate_database():
     
     # Load database
     print("\n📂 Loading database...")
-    with open('rentfaster_detailed_offline.json', 'r') as f:
+    with open('data/rentfaster_detailed_offline.json', 'r') as f:
         all_data = json.load(f)
     
     print(f"   Total entries: {len(all_data):,}")
@@ -70,7 +70,7 @@ def deduplicate_database():
     
     # Save deduplicated (backup disabled)
     print(f"\n💾 Saving deduplicated database...")
-    with open('rentfaster_detailed_offline.json', 'w', encoding='utf-8') as f:
+    with open('data/rentfaster_detailed_offline.json', 'w', encoding='utf-8') as f:
         json.dump(deduplicated, f, ensure_ascii=False, indent=2)
     
     print(f"\n{'='*80}")
